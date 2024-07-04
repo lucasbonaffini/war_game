@@ -1,0 +1,19 @@
+{
+  "name": "war_game",
+  "version": "1.0.0",
+  "description": "a simple war video game to learn and have fun :)",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasbonaffini/war_game.git"
+  },
+  "author": "Lucas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucasbonaffini/war_game/issues"
+  },
+  "homepage": "https://github.com/lucasbonaffini/war_game#readme"
+}
