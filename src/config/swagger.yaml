@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: My Game API
+  version: 1.0.0
+  description: API documentation for my video game.
+
+components:
+  schemas:
+    Character:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the character.
+        name:
+          type: string
+          description: The name of the character.
+        race:
+          type: string
+          description: The race of the character.
+        characterClass:
+          $ref: '#/components/schemas/Class'
+        bag:
+          type: array
+          items:
+            type: string
+          description: The inventory bag of the character.
+        weapons:
+          type: array
+          items:
+            type: string
+          description: The weapons equipped by the character.
+        hp:
+          type: number
+          description: The hit points of the character.
+        ac:
+          type: number
+          description: The armor class of the character.
+
+    Gear:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the gear.
+        name:
+          type: string
+          description: The name of the gear.
+        type:
+          type: string
+          description: The type of gear (e.g., armor, accessory).
+
+    Potion:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the potion.
+        effects:
+          type: object
+          description: The effects of the potion.
+        usage:
+          type: string
+          description: The usage description of the potion.
+
+    Weapon:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the weapon.
+        name:
+          type: string
+          description: The name of the weapon.
+        type:
+          type: string
+          description: The type of weapon (e.g., sword, bow).
+        damage:
+          type: number
+          description: The damage inflicted by the weapon.
+
+    Class:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the class.
+        description:
+          type: string
+          description: A brief description of the class.
+        attributes:
+          type: object
+          description: The attributes and their values for the class.
+
+    Spell:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the spell.
+        description:
+          type: string
+          description: Description of the spell.
+        manaCost:
+          type: number
+          description: Mana cost required to cast the spell.
+
+paths:
+  /characters/{id}:
+    get:
+      summary: Get a character by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the character to retrieve
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+
+  /gear/{id}:
+    get:
+      summary: Get a piece of gear by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the gear to retrieve
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gear'
+
+  /potions/{id}:
+    get:
+      summary: Get a potion by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the potion to retrieve
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Potion'
+
+  /weapons/{id}:
+    get:
+      summary: Get a weapon by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the weapon to retrieve
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Weapon'

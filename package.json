@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/lucasbonaffini/war_game/issues"
   },
-  "homepage": "https://github.com/lucasbonaffini/war_game#readme"
+  "homepage": "https://github.com/lucasbonaffini/war_game#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^10.0.0"
+  }
 }
