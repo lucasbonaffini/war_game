@@ -16,9 +16,10 @@ class Wizard extends Character {
      * @param {number} [mana=1000] - The mana points of the character.
      * @param {Array} [spells=[]] - The spells known by the character.
      */
-    constructor(id , name, race, characterClass, gear = [], potions = [], weapons = [], hp = 2000, ac = 0, mana = 1000, spells = []) {
-        super(id, name, race, characterClass, bag, gear, potions, weapons, hp, ac);
+    constructor(id , name, race, characterClass, gear = [], potions = [], weapons = [], hp = 2000, ac = 0, mana = 1000, maxMana = 1000, spells = []) {
+        super(id, name, race, characterClass, gear, potions, weapons, hp, ac);
         this.mana = mana;
+        this.maxMana = maxMana;
         this.spells = spells;
     }
 }

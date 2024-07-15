@@ -13,7 +13,7 @@ class Class {
         this.description = description;
         this.attributes = {
             strength: attributes.strength || 0,
-            agility: attributes.agility || 0,
+            dexterity: attributes.dexterity || 0,
             intelligence: attributes.intelligence || 0,
             charisma: attributes.charisma || 0
         };

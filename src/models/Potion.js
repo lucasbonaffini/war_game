@@ -11,3 +11,5 @@ class Potion {
         this.usage = usage;
     }
 }
+
+module.exports = Potion;

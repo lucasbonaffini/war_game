@@ -19,8 +19,7 @@ const options = {
     },
     
     apis: [
-        './controllers/*.js',
-        './models/*.js',
+        './routes/*.js',
         path.resolve(__dirname, './swagger.yaml'),
     ],
 };

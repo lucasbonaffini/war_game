@@ -1,8 +1,466 @@
 openapi: 3.0.0
 info:
-  title: My Game API
+  title: Character API
+  description: API documentation for managing characters
   version: 1.0.0
-  description: API documentation for my video game.
+paths:
+  /characters:
+    post:
+      summary: Create a new character
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                race:
+                  type: string
+                classId:
+                  type: string
+              required:
+                - name
+                - race
+                - classId
+      responses:
+        '200':
+          description: Character created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '400':
+          description: Invalid request body or missing required fields
+    get:
+      summary: Get all characters
+      responses:
+        '200':
+          description: List of characters retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Character'
+        '500':
+          description: Internal server error
+
+  '/characters/{id}':
+    get:
+      summary: Get character by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Character retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character not found
+
+    put:
+      summary: Update character by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: character
+          required: true
+          description: The updated character object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              race:
+                type: string
+              classId:
+                type: string
+              hp:
+                type: integer
+              ac:
+                type: integer
+      responses:
+        '200':
+          description: Character updated successfully
+        '404':
+          description: Character not found
+
+    delete:
+      summary: Delete character by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Character deleted successfully
+        '404':
+          description: Character not found
+
+  /wizards:
+    post:
+      summary: Create a new wizard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                race:
+                  type: string
+                classId:
+                  type: string
+                hp:
+                  type: integer
+                maxHp:
+                  type: integer
+                ac:
+                  type: integer
+                mana:
+                  type: integer
+                maxMana:
+                  type: integer
+              required:
+                - name
+                - race
+                - classId
+      responses:
+        '200':
+          description: Wizard created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wizard'
+        '400':
+          description: Invalid request body or missing required fields
+    get:
+      summary: Get all wizards
+      responses:
+        '200':
+          description: List of wizards retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Wizard'
+        '500':
+          description: Internal server error
+
+  '/wizards/{id}':
+    get:
+      summary: Get wizard by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Wizard retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wizard'
+        '404':
+          description: Wizard not found
+
+    put:
+      summary: Update wizard by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: wizard
+          required: true
+          description: The updated wizard object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              race:
+                type: string
+              classId:
+                type: string
+              hp:
+                type: integer
+              maxHp:
+                type: integer
+              ac:
+                type: integer
+              mana:
+                type: integer
+              maxMana:
+                type: integer
+              spells:
+                type: array
+                items:
+                  type: string
+      responses:
+        '200':
+          description: Wizard updated successfully
+        '404':
+          description: Wizard not found
+
+    delete:
+      summary: Delete wizard by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Wizard deleted successfully
+        '404':
+          description: Wizard not found
+
+  '/wizards/{id}/restore-mana':
+    post:
+      summary: Restore mana for a wizard
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Mana restored successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wizard'
+        '404':
+          description: Wizard or mana potion not found
+
+  '/wizards/{id}/add-spell':
+    post:
+      summary: Add a spell to a wizard
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spellId:
+                  type: string
+      responses:
+        '200':
+          description: Spell added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wizard'
+        '404':
+          description: Wizard or spell not found
+
+  '/characters/{id}/heal':
+    post:
+      summary: Heal a character
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                healAmount:
+                  type: integer
+      responses:
+        '200':
+          description: Character healed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character or healing potion not found
+
+  '/characters/{id}/attack':
+    post:
+      summary: Attack a character
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetId:
+                  type: string
+                attackPower:
+                  type: integer
+      responses:
+        '200':
+          description: Attack executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character or target not found
+
+  /classes:
+    post:
+      summary: Create a new class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                attributes:
+                  type: object
+                  properties:
+                    strength:
+                      type: integer
+                    dexterity:
+                      type: integer
+                    intelligence:
+                      type: integer
+                    charisma:
+                      type: integer
+              required:
+                - name
+      responses:
+        '200':
+          description: Class created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+        '400':
+          description: Invalid request body or missing required fields
+    get:
+      summary: Get all classes
+      responses:
+        '200':
+          description: List of classes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+        '500':
+          description: Internal server error
+
+  '/classes/{id}':
+    get:
+      summary: Get class by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Class retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+        '404':
+          description: Class not found
+
+    put:
+      summary: Update class by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: class
+          required: true
+          description: The updated class object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              attributes:
+                type: object
+                properties:
+                  strength:
+                    type: integer
+                  dexterity:
+                    type: integer
+                  intelligence:
+                    type: integer
+                  charisma:
+                    type: integer
+      responses:
+        '200':
+          description: Class updated successfully
+        '404':
+          description: Class not found
+
+    delete:
+      summary: Delete class by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Class deleted successfully
+        '404':
+          description: Class not found
 
 components:
   schemas:
@@ -11,173 +469,52 @@ components:
       properties:
         id:
           type: string
-          description: The unique identifier for the character.
         name:
           type: string
-          description: The name of the character.
         race:
           type: string
-          description: The race of the character.
-        characterClass:
-          $ref: '#/components/schemas/Class'
-        bag:
-          type: array
-          items:
-            type: string
-          description: The inventory bag of the character.
-        weapons:
-          type: array
-          items:
-            type: string
-          description: The weapons equipped by the character.
+        classId:
+          type: string
         hp:
-          type: number
-          description: The hit points of the character.
+          type: integer
         ac:
-          type: number
-          description: The armor class of the character.
+          type: integer
 
-    Gear:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the gear.
-        name:
-          type: string
-          description: The name of the gear.
-        type:
-          type: string
-          description: The type of gear (e.g., armor, accessory).
-
-    Potion:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the potion.
-        effects:
-          type: object
-          description: The effects of the potion.
-        usage:
-          type: string
-          description: The usage description of the potion.
-
-    Weapon:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique identifier for the weapon.
-        name:
-          type: string
-          description: The name of the weapon.
-        type:
-          type: string
-          description: The type of weapon (e.g., sword, bow).
-        damage:
-          type: number
-          description: The damage inflicted by the weapon.
+    Wizard:
+      allOf:
+        - $ref: '#/components/schemas/Character'
+        - type: object
+          properties:
+            mana:
+              type: integer
+            maxMana:
+              type: integer
+            spells:
+              type: array
+              items:
+                type: string
 
     Class:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
-          description: The name of the class.
         description:
           type: string
-          description: A brief description of the class.
         attributes:
           type: object
-          description: The attributes and their values for the class.
+          properties:
+            strength:
+              type: integer
+            dexterity:
+              type: integer
+            intelligence:
+              type: integer
+            charisma:
+              type: integer
 
-    Spell:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the spell.
-        description:
-          type: string
-          description: Description of the spell.
-        manaCost:
-          type: number
-          description: Mana cost required to cast the spell.
 
-paths:
-  /characters/{id}:
-    get:
-      summary: Get a character by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the character to retrieve
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Character'
 
-  /gear/{id}:
-    get:
-      summary: Get a piece of gear by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the gear to retrieve
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Gear'
 
-  /potions/{id}:
-    get:
-      summary: Get a potion by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the potion to retrieve
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Potion'
-
-  /weapons/{id}:
-    get:
-      summary: Get a weapon by ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the weapon to retrieve
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Weapon'
