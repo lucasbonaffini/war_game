@@ -71,7 +71,25 @@ router.post('/attack', async (req, res, next) => {
     }
 });
 
-router.post('/potion/:characterId/:potionId', async (req, res, next) => {
+router.post('/gears/:characterId/:gearId', async (req, res, next) => {
+    try {
+        const character = await CharacterService.addGear(req.params.characterId, req.params.gearId);
+        res.status(200).json(character);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/weapons/:characterId/:weaponId', async (req, res, next) => {
+    try {
+        const character = await CharacterService.addWeapon(req.params.characterId, req.params.weaponId);
+        res.status(200).json(character);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/potions/:characterId/:potionId', async (req, res, next) => {
     try {
         const character = await CharacterService.addPotion(req.params.characterId, req.params.potionId);
         res.status(200).json(character);

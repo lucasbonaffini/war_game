@@ -313,13 +313,10 @@ paths:
         '404':
           description: Character or healing potion not found
 
-  '/characters/{id}/attack':
+  '/characters/attack':
     post:
       summary: Attack a character
       parameters:
-        - in: path
-          name: id
-          required: true
           schema:
             type: string
       requestBody:
@@ -329,10 +326,12 @@ paths:
             schema:
               type: object
               properties:
+                attackerId:
+                  type: string
                 targetId:
                   type: string
-                attackPower:
-                  type: integer
+                weaponId:
+                  type: string
       responses:
         '200':
           description: Attack executed successfully
@@ -342,6 +341,85 @@ paths:
                 $ref: '#/components/schemas/Character'
         '404':
           description: Character or target not found
+  
+  '/characters/potions/{characterId}/{potionId}':
+    post:
+      summary: Add a potion to a character
+      parameters:
+        - in: path
+          name: characterId
+          required: true
+          schema:
+            type: string
+          description: The ID of the character
+        - in: path
+          name: potionId
+          required: true
+          schema:
+            type: string
+          description: The ID of the potion to add
+      responses:
+        '200':
+          description: Potion added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character or potion not found
+
+  '/characters/weapons/{characterId}/{weaponId}':
+    post:
+      summary: Add a weapon to a character
+      parameters:
+        - in: path
+          name: characterId
+          required: true
+          schema:
+            type: string
+          description: The ID of the character to add the weapon to
+        - in: path
+          name: weaponId
+          required: true
+          schema:
+            type: string
+          description: The ID of the weapon to add
+      responses:
+        '200':
+          description: Weapon added to character successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character or Weapon not found
+
+  '/characters/gears/{characterId}/{gearId}':
+    post:
+      summary: Add gear to a character
+      parameters:
+        - in: path
+          name: characterId
+          required: true
+          schema:
+            type: string
+          description: The ID of the character to add the gear to
+        - in: path
+          name: gearId
+          required: true
+          schema:
+            type: string
+          description: The ID of the gear to add
+      responses:
+        '200':
+          description: Gear added to character successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: Character or Gear not found
+
 
   /classes:
     post:
@@ -461,6 +539,331 @@ paths:
           description: Class deleted successfully
         '404':
           description: Class not found
+  
+  /potions:
+    post:
+      summary: Create a new potion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                effects:
+                  type: object
+                  properties:
+                    hpRestore:
+                      type: integer
+                    manaRestore:
+                      type: integer
+                    increaseDamage:
+                      type: integer
+                utility:
+                  type: string
+              required:
+                - name
+                - effects
+                - utility
+      responses:
+        '200':
+          description: Potion created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Potion'
+        '400':
+          description: Invalid request body or missing required fields
+
+    get:
+      summary: Get all potions
+      responses:
+        '200':
+          description: List of potions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Potion'
+        '500':
+          description: Internal server error
+
+  '/potions/{id}':
+    get:
+      summary: Get potion by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Potion retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Potion'
+        '404':
+          description: Potion not found
+
+    put:
+      summary: Update potion by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: potion
+          required: true
+          description: The updated potion object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              effects:
+                type: object
+                properties:
+                  hpRestore:
+                    type: integer
+                  manaRestore:
+                    type: integer
+                  increaseDamage:
+                    type: integer
+              utility:
+                type: string
+      responses:
+        '200':
+          description: Potion updated successfully
+        '404':
+          description: Potion not found
+
+    delete:
+      summary: Delete potion by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Potion deleted successfully
+        '404':
+          description: Potion not found
+  /weapons:
+    post:
+      summary: Create a new weapon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                damage:
+                  type: integer
+              required:
+                - name
+                - category
+                - damage
+      responses:
+        '201':
+          description: Weapon created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Weapon'
+        '400':
+          description: Bad request
+
+    get:
+      summary: Get all weapons
+      responses:
+        '200':
+          description: A list of weapons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Weapon'
+
+  /weapons/{id}:
+    get:
+      summary: Get a weapon by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the weapon to retrieve
+      responses:
+        '200':
+          description: Weapon found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Weapon'
+        '404':
+          description: Weapon not found
+
+    put:
+      summary: Update a weapon by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: weapon
+          required: true
+          description: The updated weapon object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              category:
+                type: string
+              damage:
+                type: integer
+      responses:
+        '200':
+          description: Weapon updated successfully
+        '404':
+          description: Weapon not found
+
+    delete:
+      summary: Delete a weapon by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the weapon to delete
+      responses:
+        '200':
+          description: Weapon deleted successfully
+        '404':
+          description: Weapon not found
+
+  /gears:
+    post:
+      summary: Create a new gear
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                armour: 
+                  type: integer
+              required:
+                - name
+                - category
+                - armour
+      responses:
+        '201':
+          description: Gear created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gear'
+        '400':
+          description: Bad request
+
+    get:
+      summary: Get all gears
+      responses:
+        '200':
+          description: A list of gears
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gear'
+
+  /gears/{id}:
+    get:
+      summary: Get a gear by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the gear to retrieve
+      responses:
+        '200':
+          description: Gear found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gear'
+        '404':
+          description: Gear not found
+
+    put:
+      summary: Update a gear by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: gear
+          required: true
+          description: The updated gear object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              category:
+                type: string
+              armour:
+                type: integer
+      responses:
+        '200':
+          description: Gear updated successfully
+        '404':
+          description: Gear not found
+
+    delete:
+      summary: Delete a gear by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the gear to delete
+      responses:
+        '200':
+          description: Gear deleted successfully
+        '404':
+          description: Gear not found
 
 components:
   schemas:
@@ -515,6 +918,50 @@ components:
             charisma:
               type: integer
 
+    Potion:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        effects:
+          type: object
+          properties:
+            hpRestore:
+              type: integer
+            manaRestore:
+              type: integer
+            increaseDamage:
+              type: integer
+          required:
+            - hpRestore
+        utility:
+          type: string
 
+    Weapon:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        damage:
+          type: integer     
+
+    Gear:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        armour:
+          type: integer
+        
 
 

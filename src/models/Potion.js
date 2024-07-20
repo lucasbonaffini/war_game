@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 class Potion {
     /**
      * Constructs a new Potion instance.
@@ -5,10 +6,11 @@ class Potion {
      * @param {Object} effects - The effects of the potion (e.g., { hpRestore: 50 }).
      * @param {string} usage - The usage description of the potion.
      */
-    constructor(name, effects, usage) {
+    constructor(id = uuidv4(), name, effects, utility) {
+        this.id = id;
         this.name = name;
         this.effects = effects;
-        this.usage = usage;
+        this.utility = utility;
     }
 }
 

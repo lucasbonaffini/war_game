@@ -3,7 +3,7 @@ const pool = require('./db');
 async function setupDatabase() {
     try {
       const connection = await pool.getConnection();
-      // Crea la base de datos si no existe
+      
       await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`);
       await connection.release();
   
@@ -36,9 +36,6 @@ async function createTables(pool) {
             name VARCHAR(255) NOT NULL,
             race VARCHAR(255) NOT NULL,
             class_id CHAR(36),
-            gear JSON,
-            potions JSON,
-            weapons JSON,
             hp INT DEFAULT 2000,
             maxHp INT DEFAULT 2000,
             ac INT DEFAULT 0,
@@ -50,9 +47,8 @@ async function createTables(pool) {
       CREATE TABLE IF NOT EXISTS potions (
             id CHAR(36) PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
-            effect VARCHAR(255) NOT NULL,
-            characterId CHAR(36),
-            FOREIGN KEY (characterId) REFERENCES characters(id)
+            effects JSON,
+            utility VARCHAR(255) NOT NULL
       )
     `);
 
@@ -63,9 +59,7 @@ async function createTables(pool) {
             description VARCHAR(255) NOT NULL,
             manaCost INT DEFAULT 0,
             damage INT DEFAULT 0,
-            duration INT DEFAULT 0,            
-            characterId CHAR(36),
-            FOREIGN KEY (characterId) REFERENCES characters(id)
+            duration INT DEFAULT 0
       )
     `);
 
@@ -73,9 +67,8 @@ async function createTables(pool) {
     CREATE TABLE IF NOT EXISTS gears (
           id CHAR(36) PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
-          type VARCHAR(255) NOT NULL,
-          characterId CHAR(36),
-          FOREIGN KEY (characterId) REFERENCES characters(id)
+          category VARCHAR(255) NOT NULL,
+          armour INTEGER NOT NULL
     )
   `);
 
@@ -83,9 +76,8 @@ async function createTables(pool) {
     CREATE TABLE IF NOT EXISTS weapons (
           id CHAR(36) PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
-          damage INT NOT NULL,
-          characterId CHAR(36),
-          FOREIGN KEY (characterId) REFERENCES characters(id)
+          category VARCHAR(255) NOT NULL,
+          damage INT NOT NULL
     )
   `);
     
@@ -93,8 +85,7 @@ async function createTables(pool) {
         CREATE TABLE IF NOT EXISTS wizards (
               character_id CHAR(36) PRIMARY KEY REFERENCES characters(id),
               mana INT DEFAULT 1000,
-              maxMana INT DEFAULT 1000,
-              spells JSON
+              maxMana INT DEFAULT 1000
         )
       `);
 

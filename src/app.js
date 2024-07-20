@@ -4,17 +4,14 @@ const characterRoutes = require('./routes/CharacterRouter');
 const potionRoutes = require('./routes/PotionRouter');
 const classRoutes = require('./routes/ClassRouter');
 const wizardRoutes = require('./routes/WizardRouter');
+const gearRoutes = require('./routes/GearRouter');
+const weaponRoutes = require('./routes/WeaponRouter');
 const configureSwagger = require('./config/swagger');
 const setupDatabase = require('./config/setupDatabase');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env file
 dotenv.config();
-
-console.log(process.env.DB_HOST);
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASSWORD);
-console.log(process.env.DB_NAME);
 
 app.use(express.json());
 
@@ -26,6 +23,9 @@ setupDatabase()
     app.use('/potions', potionRoutes);
     app.use('/classes', classRoutes);
     app.use('/wizards', wizardRoutes);
+    app.use('/gears', gearRoutes);
+    app.use('/gears', gearRoutes);
+    app.use('/weapons', weaponRoutes);
 
     // Swagger configuration
     configureSwagger(app);

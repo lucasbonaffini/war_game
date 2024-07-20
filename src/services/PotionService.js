@@ -2,14 +2,14 @@ const Potion = require('../models/Potion')
 const pool = require('../config/db');
 
 class PotionService {
-    static async createPotion({ name, effects, usage }) {
+    static async createPotion({ name, effects, utility }) {
       try {
         // Create a new Potion instance using the model constructor
-        const potion = new Potion(undefined, name, effects, usage);
+        const potion = new Potion(undefined, name, effects, utility);
   
         const result = await pool.query(
-          'INSERT INTO potions (id, name, effects, usage) VALUES (?, ?, ?, ?)',
-          [potion.id, potion.name, potion.effects, potion.usage]
+          'INSERT INTO potions (id, name, effects, utility) VALUES (?, ?, ?, ?)',
+          [potion.id, potion.name, JSON.stringify(potion.effects), potion.utility]
         );
             console.log('Potion created successfully:', result);
             return potion;
@@ -27,7 +27,7 @@ class PotionService {
                     potion.id,
                     potion.name,
                     potion.effects,
-                    potion.usage
+                    potion.utility
                 );
             }
             return null;
@@ -36,11 +36,11 @@ class PotionService {
             throw error;
         }
     }
-    static async updatePotion(id, { name, effects, usage }) {
+    static async updatePotion(id, { name, effects, utility }) {
         try {
           const result = await pool.query(
-            'UPDATE potions SET name = ?, effects = ?, usage = ? WHERE id = ?',
-            [name, effects, usage, id]
+            'UPDATE potions SET name = ?, effects = ?, utility = ? WHERE id = ?',
+            [name, JSON.stringify(effects), utility, id]
           );
           if (result.affectedRows > 0) {
             console.log('Potion updated successfully');
@@ -72,7 +72,7 @@ class PotionService {
             potion.id,
             potion.name,
             potion.effects,
-            potion.usage
+            potion.utility
           ));
             return potions;
         } catch (error) {
