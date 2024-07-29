@@ -25,7 +25,6 @@ setupDatabase()
     app.use('/classes', classRoutes);
     app.use('/wizards', wizardRoutes);
     app.use('/gears', gearRoutes);
-    app.use('/gears', gearRoutes);
     app.use('/weapons', weaponRoutes);
     app.use('spells', spellRoutes);
 
