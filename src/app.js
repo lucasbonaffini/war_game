@@ -6,6 +6,7 @@ const classRoutes = require('./routes/ClassRouter');
 const wizardRoutes = require('./routes/WizardRouter');
 const gearRoutes = require('./routes/GearRouter');
 const weaponRoutes = require('./routes/WeaponRouter');
+const spellRoutes = require('./routes/SpellRouter');
 const configureSwagger = require('./config/swagger');
 const setupDatabase = require('./config/setupDatabase');
 const dotenv = require('dotenv');
@@ -26,6 +27,7 @@ setupDatabase()
     app.use('/gears', gearRoutes);
     app.use('/gears', gearRoutes);
     app.use('/weapons', weaponRoutes);
+    app.use('spells', spellRoutes);
 
     // Swagger configuration
     configureSwagger(app);

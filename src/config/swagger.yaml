@@ -127,16 +127,6 @@ paths:
                   type: string
                 classId:
                   type: string
-                hp:
-                  type: integer
-                maxHp:
-                  type: integer
-                ac:
-                  type: integer
-                mana:
-                  type: integer
-                maxMana:
-                  type: integer
               required:
                 - name
                 - race
@@ -864,6 +854,91 @@ paths:
           description: Gear deleted successfully
         '404':
           description: Gear not found
+  
+  /spells:
+    get:
+      summary: Retrieve all spells
+      responses:
+        '200':
+          description: A list of spells
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Spell'
+    post:
+      summary: Create a new spell
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Spell'
+      responses:
+        '201':
+          description: Spell created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Spell'
+        '400':
+          description: Invalid input
+          
+  /spells/{id}:
+    get:
+      summary: Retrieve a spell by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Spell details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Spell'
+        '404':
+          description: Spell not found
+          
+    put:
+      summary: Update a spell by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Spell'
+      responses:
+        '200':
+          description: Spell updated successfully
+        '404':
+          description: Spell not found
+        '400':
+          description: Invalid input
+          
+    delete:
+      summary: Delete a spell by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Spell deleted successfully
+        '404':
+          description: Spell not found
 
 components:
   schemas:
@@ -880,6 +955,8 @@ components:
           type: string
         hp:
           type: integer
+        maxHp:
+          type: integer
         ac:
           type: integer
 
@@ -892,10 +969,6 @@ components:
               type: integer
             maxMana:
               type: integer
-            spells:
-              type: array
-              items:
-                type: string
 
     Class:
       type: object
@@ -962,6 +1035,27 @@ components:
           type: string
         armour:
           type: integer
+
+    Spell:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: 'Fireball'
+        description:
+          type: string
+          example: 'A blazing fireball that deals damage to enemies.'
+        manaCost:
+          type: number
+          example: 50
+        damage:
+          type: number
+          example: 100
+        duration:
+          type: number
+          example: 5
         
 
 

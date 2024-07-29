@@ -275,7 +275,7 @@ class CharacterService {
             if (!gear) {
                 throw new Error('Gear not found');
             }
-
+    
             const [rows] = await pool.query(
                 'SELECT * FROM character_gear WHERE character_id = ? AND gear_id = ?',
                 [characterId, gearId]
@@ -285,9 +285,35 @@ class CharacterService {
                 throw new Error('Gear already added to this character');
             }
     
+            // Add the gear to the character
             await pool.query('INSERT INTO character_gear (character_id, gear_id) VALUES (?, ?)', [characterId, gearId]);
-
+    
+            // Update the character's AC based on gear type
+            let additionalAC = 0;
+            switch (gear.category.toLowerCase()) {
+                case 'chestplate':
+                    additionalAC = 400;
+                    break;
+                case 'cleats':
+                    additionalAC = 100;
+                    break;
+                case 'leggings':
+                    additionalAC = 200;
+                    break;
+                case 'skullcap':
+                    additionalAC = 300;
+                    break;
+            }
+    
+            // Ensure the new AC does not exceed 1000
+            const newAC = Math.min(character.ac + additionalAC, 1000);
+    
+            // Update the character's AC in the database
+            await pool.query('UPDATE characters SET ac = ? WHERE id = ?', [newAC, characterId]);
+    
+            // Update the character object
             character.gear.push(gear);
+            character.ac = newAC;
     
             return character;
         } catch (error) {
@@ -295,6 +321,7 @@ class CharacterService {
             throw error;
         }
     }
+    
     
     static async addPotion(characterId, potionId) {
         try {
@@ -377,10 +404,17 @@ class CharacterService {
         }
 
             target.hp -= damageDealt;
+            if (target.hp < 0) target.hp = 0; // Ensure HP doesn't go negative
+
+            const isDead = target.hp === 0;
 
             await pool.query('UPDATE characters SET hp = ? WHERE id = ?', [target.hp, target.id]);
 
             const damageMessage = bonus > 0 ? `${attacker.name} attacked ${target.name} with ${weapon.name}, dealing ${initialDamage} damage and ${bonus} bonus for a total of ${damageDealt}` : `${attacker.name} attacked ${target.name} with ${weapon.name}, dealing ${damageDealt}`;
+
+            if (isDead) {
+                damageMessage += `. ${target.name} has been defeated.`;
+            }
 
             return {
                 message: damageMessage

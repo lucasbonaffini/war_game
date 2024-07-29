@@ -61,6 +61,16 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.post('/attack', async (req, res, next) => {
+    const { attackerId, targetId, spellId } = req.body;
+    try {
+        const result = await WizardService.castSpell(attackerId, targetId, spellId);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Restore mana for a wizard
 router.post('/:id/restore-mana', async (req, res) => {
     try {
