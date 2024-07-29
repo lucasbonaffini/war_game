@@ -175,7 +175,7 @@ class WizardService {
                 JOIN wizard_spells ws ON s.id = ws.spell_id
             `);
 
-            // Crear un mapa de hechizos por wizard
+            
             const spellsMap = spellsRows.reduce((acc, spellRow) => {
                 if (!acc[spellRow.character_id]) {
                     acc[spellRow.character_id] = [];
