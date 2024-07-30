@@ -33,8 +33,8 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./:/src
-    command: node app.js
+      - .:/usr/src/app
+    command: npm start
 
 volumes:
   my-db:
