@@ -26,7 +26,7 @@ setupDatabase()
     app.use('/wizards', wizardRoutes);
     app.use('/gears', gearRoutes);
     app.use('/weapons', weaponRoutes);
-    app.use('spells', spellRoutes);
+    app.use('/spells', spellRoutes);
 
     // Swagger configuration
     configureSwagger(app);
