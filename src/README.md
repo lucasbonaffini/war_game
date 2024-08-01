@@ -97,3 +97,108 @@ Here is the path to the db schema img
 
 <src/war_game.png>
 
+# Database Schema Documentation
+
+## Classes Table
+
+| Column      | Data Type  | Description                        |
+|-------------|------------|------------------------------------|
+| id          | CHAR(36)   | Primary key                        |
+| name        | VARCHAR(255)| Name of the class                 |
+| description | TEXT       | Description of the class           |
+| attributes  | JSON       | Additional attributes in JSON format|
+
+## Characters Table
+
+| Column     | Data Type  | Description                        |
+|------------|------------|------------------------------------|
+| id         | CHAR(36)   | Primary key                        |
+| name       | VARCHAR(255)| Name of the character              |
+| race       | VARCHAR(255)| Race of the character              |
+| class_id   | CHAR(36)   | Foreign key referencing `classes.id`|
+| hp         | INT        | Current hit points (default 2000)  |
+| maxHp      | INT        | Maximum hit points (default 2000)  |
+| ac         | INT        | Armor class (default 0)            |
+
+## Potions Table
+
+| Column     | Data Type  | Description                        |
+|------------|------------|------------------------------------|
+| id         | CHAR(36)   | Primary key                        |
+| name       | VARCHAR(255)| Name of the potion                 |
+| effects    | JSON       | Effects of the potion in JSON format|
+| utility    | VARCHAR(255)| Utility of the potion              |
+
+## Spells Table
+
+| Column     | Data Type  | Description                        |
+|------------|------------|------------------------------------|
+| id         | CHAR(36)   | Primary key                        |
+| name       | VARCHAR(255)| Name of the spell                  |
+| description| VARCHAR(255)| Description of the spell           |
+| manaCost   | INT        | Mana cost of the spell (default 0) |
+| damage     | INT        | Damage caused by the spell (default 0) |
+| duration   | INT        | Duration of the spell in seconds (default 0) |
+
+## Gears Table
+
+| Column     | Data Type  | Description                        |
+|------------|------------|------------------------------------|
+| id         | CHAR(36)   | Primary key                        |
+| name       | VARCHAR(255)| Name of the gear                   |
+| category   | VARCHAR(255)| Category of the gear               |
+| armour     | INTEGER    | Armour value provided by the gear  |
+
+## Weapons Table
+
+| Column     | Data Type  | Description                        |
+|------------|------------|------------------------------------|
+| id         | CHAR(36)   | Primary key                        |
+| name       | VARCHAR(255)| Name of the weapon                 |
+| category   | VARCHAR(255)| Category of the weapon             |
+| damage     | INT        | Damage value of the weapon         |
+
+## Wizards Table
+
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Primary key, foreign key referencing `characters.id` |
+| mana          | INT        | Mana points (default 1000)         |
+| maxMana       | INT        | Maximum mana points (default 1000) |
+
+## Character_Potions Table
+
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Foreign key referencing `characters.id` |
+| potion_id     | CHAR(36)   | Foreign key referencing `potions.id`|
+| PRIMARY KEY   | (character_id, potion_id) | Composite primary key |
+
+## Character_Weapons Table
+
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Foreign key referencing `characters.id` |
+| weapon_id     | CHAR(36)   | Foreign key referencing `weapons.id`|
+| PRIMARY KEY   | (character_id, weapon_id) | Composite primary key |
+
+## Character_Gear Table
+
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Foreign key referencing `characters.id` |
+| gear_id       | CHAR(36)   | Foreign key referencing `gears.id`|
+| PRIMARY KEY   | (character_id, gear_id) | Composite primary key |
+
+## Wizard_Spells Table
+
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Foreign key referencing `characters.id` |
+| spell_id      | CHAR(36)   | Foreign key referencing `spells.id`|
+| PRIMARY KEY   | (character_id, spell_id) | Composite primary key |
+
+
+
+
+
