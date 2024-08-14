@@ -939,6 +939,107 @@ paths:
           description: Spell deleted successfully
         '404':
           description: Spell not found
+  /auth/register:
+    post:
+      summary: "Register a new user"
+      description: "Create a new user account with username and password."
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "testuser"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '201':
+          description: "User created successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "8b59389e-eced-4d14-bf94-c1769d034f0b"
+                  username:
+                    type: string
+                    example: "testuser"
+        '500':
+          description: "Error creating user"
+
+  /auth/login:
+    post:
+      summary: "Login a user"
+      description: "Authenticate a user and return a JWT token."
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "testuser"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: "User authenticated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: "Invalid credentials"
+        '500':
+          description: "Error logging in"
+
+  /auth/protected:
+    get:
+      summary: "Access protected route"
+      description: "Access a protected route that requires a valid JWT token."
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: "Protected resource accessed"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "This is a protected route"
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "8b59389e-eced-4d14-bf94-c1769d034f0b"
+                      username:
+                        type: string
+                        example: "testuser"
+        '401':
+          description: "Invalid token or no token provided"
 
 components:
   schemas:
@@ -1056,6 +1157,11 @@ components:
         duration:
           type: number
           example: 5
-        
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT        
 
 
