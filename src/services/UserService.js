@@ -16,7 +16,7 @@ class UserService {
     const [rows] = await pool.query(query, [id]);
     if (rows.length === 0) return null;
     const { username, password } = rows[0];
-    return new User(id, username, password);
+    return new User(id, username, password, role);
   }
 
   static async getUserByUsername(username) {
