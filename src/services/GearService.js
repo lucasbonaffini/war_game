@@ -40,7 +40,7 @@ class GearService {
         try {
           const result = await pool.query(
             'UPDATE gears SET name = ?, category = ?, armour = ? WHERE id = ?',
-            [name, type, armour, id]
+            [name, category, armour, id]
           );
           if (result.affectedRows > 0) {
             console.log('Gear updated successfully');
