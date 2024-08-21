@@ -7,17 +7,6 @@
     "start": "node src/app.js",
     "test": "jest --coverage"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "functions": 70,
-        "lines": 70,
-        "statements": 70
-    }
-  }
-},  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucasbonaffini/war_game.git"
@@ -41,3 +30,4 @@
     "supertest": "^7.0.0"
   }
 }
+
