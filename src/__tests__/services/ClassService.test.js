@@ -1,4 +1,7 @@
-// Mock explícito de Class
+const ClassService = require('../../services/ClassService');
+const Class = require('../../models/Class');
+
+
 jest.mock('../../models/Class.js', () => {
     return {
       create: jest.fn(),
