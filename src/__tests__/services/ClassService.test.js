@@ -1,5 +1,5 @@
 // Mock explícito de Class
-jest.mock('../../models/Class', () => {
+jest.mock('../../models/Class.js', () => {
     return {
       create: jest.fn(),
       update: jest.fn(),
@@ -9,12 +9,12 @@ jest.mock('../../models/Class', () => {
   
   describe('ClassService', () => {
     afterEach(() => {
-      jest.clearAllMocks(); // Limpiar los mocks después de cada prueba
+      jest.clearAllMocks(); 
     });
   
     test('should create a new class', async () => {
       const mockClass = { id: '1', name: 'Wizard' };
-      Class.create.mockResolvedValue(mockClass); // Mockear método create
+      Class.create.mockResolvedValue(mockClass); 
   
       const classInstance = await ClassService.createClass(mockClass);
   
@@ -24,7 +24,7 @@ jest.mock('../../models/Class', () => {
   
     test('should update existing class', async () => {
       const mockClass = { name: 'Warrior' };
-      Class.update.mockResolvedValue([1]); // Mockear método update
+      Class.update.mockResolvedValue([1]); 
   
       const updated = await ClassService.updateClass('1', mockClass);
   
@@ -33,7 +33,7 @@ jest.mock('../../models/Class', () => {
     });
   
     test('should delete class by id', async () => {
-      Class.destroy.mockResolvedValue(1); // Mockear método destroy
+      Class.destroy.mockResolvedValue(1); 
   
       const deleted = await ClassService.deleteClass('1');
   
