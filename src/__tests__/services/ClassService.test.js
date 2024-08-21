@@ -14,7 +14,7 @@ jest.mock('../../models/Class', () => {
   });
 });
 
-jest.mock('../../db/pool', () => ({
+jest.mock('../../config/db.js', () => ({
   query: jest.fn(),
 }));
 
