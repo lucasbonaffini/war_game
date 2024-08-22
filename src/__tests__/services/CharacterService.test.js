@@ -1,8 +1,8 @@
 const CharacterService = require('../../services/CharacterService');
-const pool = require('../../config/database'); // Asegúrate de que la ruta sea correcta
+const pool = require('../../config/db.js'); // Asegúrate de que la ruta sea correcta
 
 // Mock de la base de datos
-jest.mock('../../config/database', () => ({
+jest.mock('../../config/db.js', () => ({
   query: jest.fn(),
   getConnection: jest.fn(),
 }));
