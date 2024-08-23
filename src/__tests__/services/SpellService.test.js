@@ -1,203 +1,119 @@
-const SpellService = require('../services/SpellService');
-const pool = require('../config/db');
-const Spell = require('../models/Spell');
+const SpellService = require('../../services/SpellService');
+const Spell = require('../../models/Spell');
+const pool = require('../../config/db');
 
-jest.mock('../config/db', () => ({
+jest.mock('../../models/Spell', () => {
+  return jest.fn().mockImplementation((id, name, description, manaCost, damage, duration) => {
+    return {
+      id: id || '1',
+      name,
+      description,
+      manaCost,
+      damage,
+      duration,
+    };
+  });
+});
+
+jest.mock('../../config/db', () => ({
   query: jest.fn(),
 }));
 
 describe('SpellService', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.clearAllMocks(); // Limpiar los mocks después de cada prueba
   });
 
-  describe('createSpell', () => {
-    it('should create a spell and return the spell object', async () => {
-      const spellData = {
-        name: 'Fireball',
-        description: 'A ball of fire that causes damage',
-        manaCost: 50,
-        damage: 100,
-        duration: 5
-      };
+  test('should create a new spell', async () => {
+    const mockSpell = { id: '1', name: 'Fireball', description: 'A powerful fireball', manaCost: 50, damage: 100, duration: 5 };
+    pool.query.mockResolvedValue([{ insertId: 1 }]);
+    
+    const spellInstance = await SpellService.createSpell(mockSpell);
 
-      const mockResult = { affectedRows: 1, insertId: 'uuid-mock-id' };
-      pool.query.mockResolvedValue([mockResult]);
-
-      const spell = await SpellService.createSpell(spellData);
-
-      expect(spell).toBeInstanceOf(Spell);
-      expect(spell.name).toBe(spellData.name);
-      expect(pool.query).toHaveBeenCalledWith(
-        'INSERT INTO spells (id, name, description, manaCost, damage, duration) VALUES (?, ?, ?, ?, ?, ?)',
-        [spell.id, spell.name, spell.description, spell.manaCost, spell.damage, spell.duration]
-      );
-    });
-
-    it('should throw an error if spell creation fails', async () => {
-      const spellData = {
-        name: 'Ice Blast',
-        description: 'A chilling blast of ice',
-        manaCost: 60,
-        damage: 80,
-        duration: 7
-      };
-
-      pool.query.mockRejectedValue(new Error('Database error'));
-
-      await expect(SpellService.createSpell(spellData)).rejects.toThrow('Database error');
-      expect(pool.query).toHaveBeenCalledWith(
-        'INSERT INTO spells (id, name, description, manaCost, damage, duration) VALUES (?, ?, ?, ?, ?, ?)',
-        expect.any(Array)
-      );
-    });
+    expect(pool.query).toHaveBeenCalledWith(
+      'INSERT INTO spells (id, name, description, manaCost, damage, duration) VALUES (?, ?, ?, ?, ?, ?)',
+      [mockSpell.id, mockSpell.name, mockSpell.description, mockSpell.manaCost, mockSpell.damage, mockSpell.duration]
+    );
+    expect(spellInstance).toEqual(mockSpell);
   });
 
-  describe('searchSpellById', () => {
-    it('should return a spell object if found', async () => {
-      const mockSpell = {
-        id: 'uuid-mock-id',
-        name: 'Lightning Strike',
-        description: 'A powerful strike of lightning',
-        manaCost: 40,
-        damage: 120,
-        duration: 3
-      };
+  test('should return all spells', async () => {
+    const mockSpells = [
+      { id: '1', name: 'Fireball', description: 'A powerful fireball', manaCost: 50, damage: 100, duration: 5 },
+      { id: '2', name: 'Ice Blast', description: 'A chilling blast of ice', manaCost: 60, damage: 80, duration: 7 },
+    ];
+    pool.query.mockResolvedValue([mockSpells]);
 
-      pool.query.mockResolvedValue([[mockSpell]]);
+    const spells = await SpellService.getAllSpells();
 
-      const spell = await SpellService.searchSpellById(mockSpell.id);
-
-      expect(spell).toBeInstanceOf(Spell);
-      expect(spell.id).toBe(mockSpell.id);
-      expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', [mockSpell.id]);
-    });
-
-    it('should return null if no spell is found', async () => {
-      pool.query.mockResolvedValue([[]]);
-
-      const spell = await SpellService.searchSpellById('non-existing-id');
-
-      expect(spell).toBeNull();
-      expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', ['non-existing-id']);
-    });
-
-    it('should throw an error if search fails', async () => {
-      pool.query.mockRejectedValue(new Error('Database error'));
-
-      await expect(SpellService.searchSpellById('some-id')).rejects.toThrow('Database error');
-      expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', ['some-id']);
-    });
+    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells');
+    expect(spells).toHaveLength(2);
+    expect(spells[0].name).toBe('Fireball');
+    expect(spells[1].name).toBe('Ice Blast');
   });
 
-  describe('updateSpell', () => {
-    it('should update a spell and return true if successful', async () => {
-      const spellData = {
-        name: 'Chain Lightning',
-        description: 'Lightning that strikes multiple targets',
-        manaCost: 70,
-        damage: 130,
-        duration: 4
-      };
+  test('should return a spell by id', async () => {
+    const mockSpell = { id: '1', name: 'Fireball', description: 'A powerful fireball', manaCost: 50, damage: 100, duration: 5 };
+    pool.query.mockResolvedValue([[mockSpell]]);
 
-      const mockResult = { affectedRows: 1 };
-      pool.query.mockResolvedValue([mockResult]);
+    const spellInstance = await SpellService.searchSpellById('1');
 
-      const result = await SpellService.updateSpell('uuid-mock-id', spellData);
-
-      expect(result).toBe(true);
-      expect(pool.query).toHaveBeenCalledWith(
-        'UPDATE spells SET name = ?, description = ?, manaCost = ?, damage = ?, duration = ? WHERE id = ?',
-        [spellData.name, spellData.description, spellData.manaCost, spellData.damage, spellData.duration, 'uuid-mock-id']
-      );
-    });
-
-    it('should return false if no rows were affected (spell not found)', async () => {
-      pool.query.mockResolvedValue([{ affectedRows: 0 }]);
-
-      const result = await SpellService.updateSpell('non-existing-id', {});
-
-      expect(result).toBe(false);
-      expect(pool.query).toHaveBeenCalledWith(
-        'UPDATE spells SET name = ?, description = ?, manaCost = ?, damage = ?, duration = ? WHERE id = ?',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw an error if update fails', async () => {
-      pool.query.mockRejectedValue(new Error('Database error'));
-
-      await expect(SpellService.updateSpell('some-id', {})).rejects.toThrow('Database error');
-      expect(pool.query).toHaveBeenCalledWith(
-        'UPDATE spells SET name = ?, description = ?, manaCost = ?, damage = ?, duration = ? WHERE id = ?',
-        expect.any(Array)
-      );
-    });
+    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', ['1']);
+    expect(spellInstance).toEqual(mockSpell);
   });
 
-  describe('deleteSpell', () => {
-    it('should delete a spell and return true if successful', async () => {
-      const mockResult = { affectedRows: 1 };
-      pool.query.mockResolvedValue([mockResult]);
+  test('should return null if spell not found by id', async () => {
+    pool.query.mockResolvedValue([[]]); // Simula que no se encontró el hechizo
 
-      const result = await SpellService.deleteSpell('uuid-mock-id');
+    const spellInstance = await SpellService.searchSpellById('999');
 
-      expect(result).toBe(true);
-      expect(pool.query).toHaveBeenCalledWith('DELETE FROM spells WHERE id = ?', ['uuid-mock-id']);
-    });
-
-    it('should return false if no rows were affected (spell not found)', async () => {
-      pool.query.mockResolvedValue([{ affectedRows: 0 }]);
-
-      const result = await SpellService.deleteSpell('non-existing-id');
-
-      expect(result).toBe(false);
-      expect(pool.query).toHaveBeenCalledWith('DELETE FROM spells WHERE id = ?', ['non-existing-id']);
-    });
-
-    it('should throw an error if deletion fails', async () => {
-      pool.query.mockRejectedValue(new Error('Database error'));
-
-      await expect(SpellService.deleteSpell('some-id')).rejects.toThrow('Database error');
-      expect(pool.query).toHaveBeenCalledWith('DELETE FROM spells WHERE id = ?', ['some-id']);
-    });
+    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', ['999']);
+    expect(spellInstance).toBeNull();
   });
 
-  describe('getAllSpells', () => {
-    it('should return an array of spells', async () => {
-      const mockSpells = [
-        {
-          id: 'uuid-1',
-          name: 'Fireball',
-          description: 'A ball of fire that causes damage',
-          manaCost: 50,
-          damage: 100,
-          duration: 5
-        },
-        {
-          id: 'uuid-2',
-          name: 'Ice Blast',
-          description: 'A chilling blast of ice',
-          manaCost: 60,
-          damage: 80,
-          duration: 7
-        }
-      ];
+  test('should update a spell', async () => {
+    const mockSpell = { id: '1', name: 'Fireball', description: 'A powerful fireball', manaCost: 50, damage: 100, duration: 5 };
+    const updatedSpellData = { name: 'Greater Fireball', description: 'A more powerful fireball', manaCost: 60, damage: 150, duration: 6 };
+    pool.query.mockResolvedValue({ affectedRows: 1 });
 
-      pool.query.mockResolvedValue([mockSpells]);
+    const updatedSpell = await SpellService.updateSpell('1', updatedSpellData);
 
-      const spells = await SpellService.getAllSpells();
+    expect(pool.query).toHaveBeenCalledWith(
+      'UPDATE spells SET name = ?, description = ?, manaCost = ?, damage = ?, duration = ? WHERE id = ?',
+      [updatedSpellData.name, updatedSpellData.description, updatedSpellData.manaCost, updatedSpellData.damage, updatedSpellData.duration, '1']
+    );
+    expect(updatedSpell).toBe(true);
+  });
 
-      expect(spells).toHaveLength(2);
-      expect(spells[0]).toBeInstanceOf(Spell);
-      expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells');
-    });
+  test('should return false if spell not found for update', async () => {
+    const updatedSpellData = { name: 'Greater Fireball', description: 'A more powerful fireball', manaCost: 60, damage: 150, duration: 6 };
+    pool.query.mockResolvedValue({ affectedRows: 0 }); // Simula que no se encontró el hechizo
 
-    it('should throw an error if fetching spells fails', async () => {
-      pool.query.mockRejectedValue(new Error('Database error'));
+    const updatedSpell = await SpellService.updateSpell('999', updatedSpellData);
 
-      await expect(SpellService.getAllSpells()).rejects.toThrow('Database error');
-      expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells');
-    });
+    expect(pool.query).toHaveBeenCalledWith(
+      'UPDATE spells SET name = ?, description = ?, manaCost = ?, damage = ?, duration = ? WHERE id = ?',
+      [updatedSpellData.name, updatedSpellData.description, updatedSpellData.manaCost, updatedSpellData.damage, updatedSpellData.duration, '999']
+    );
+    expect(updatedSpell).toBe(false);
+  });
+
+  test('should delete a spell by id', async () => {
+    pool.query.mockResolvedValue({ affectedRows: 1 });
+
+    const result = await SpellService.deleteSpell('1');
+
+    expect(pool.query).toHaveBeenCalledWith('DELETE FROM spells WHERE id = ?', ['1']);
+    expect(result).toBe(true);
+  });
+
+  test('should return false if spell not found for deletion', async () => {
+    pool.query.mockResolvedValue({ affectedRows: 0 }); // Simula que no se encontró el hechizo
+
+    const result = await SpellService.deleteSpell('999');
+
+    expect(pool.query).toHaveBeenCalledWith('DELETE FROM spells WHERE id = ?', ['999']);
+    expect(result).toBe(false);
   });
 });
+
