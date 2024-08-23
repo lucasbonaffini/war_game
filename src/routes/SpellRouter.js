@@ -5,7 +5,7 @@ const SpellService = require('../services/SpellService.js')
 
 router.post('/', async (req, res, next) => {
     try {
-        const spell = await SpellService.createPotion(req.body);
+        const spell = await SpellService.createSpell(req.body);
         res.status(201).json(spell);
     } catch (error) {
         next(error);
@@ -15,7 +15,7 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const spell = await SpellService.searchSpellById(req.params.id);
-        if (potion) {
+        if (spell) {
             res.status(200).json(spell);
         } else {
             res.status(404).send('Spell not found')
@@ -28,7 +28,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
     try {
-        const updated = await SpellService.updatePotion(req.params.id, req.body);
+        const updated = await SpellService.updateSpell(req.params.id, req.body);
         if (updated) {
             res.status(200).send('Spell updated successfully')
         } else {
@@ -41,7 +41,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
     try {
-        const deleted = await SpellService.deletePotion(req.params.id)
+        const deleted = await SpellService.deleteSpell(req.params.id)
     if (deleted) {
         res.status(200).send('Spell deleted successfully');
     } else {
