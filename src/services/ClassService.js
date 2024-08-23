@@ -35,7 +35,7 @@ class ClassService {
 
     static async searchClassById(id) {
         try {
-            const [rows] = await pool.query('SELECT * FROM classes WHERE id = ?', [id]);
+            const [rows] = await pool.query('SELECT id, name, description, attributes FROM classes WHERE id = ?', [id]);
             if (rows.length > 0) {
                 const classData = rows[0];
                 return new Class(
@@ -68,7 +68,7 @@ class ClassService {
 
     static async getAllClasses() {
         try {
-            const [rows] = await pool.query('SELECT * FROM classes');
+            const [rows] = await pool.query('SELECT id, name, description, attributes FROM classes');
             const classes = rows.map(classData => new Class(
                 classData.id,
                 classData.name,

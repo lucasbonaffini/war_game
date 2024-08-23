@@ -44,7 +44,7 @@ describe('ClassService', () => {
 
     const classes = await ClassService.getAllClasses();
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM classes');
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, attributes FROM classes');
     expect(classes).toHaveLength(2);
     expect(classes[0].name).toBe('Wizard');
     expect(classes[1].name).toBe('Warrior');
@@ -56,7 +56,7 @@ describe('ClassService', () => {
 
     const classInstance = await ClassService.searchClassById('1');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM classes WHERE id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, attributes FROM classes WHERE id = ?', ['1']);
     expect(classInstance).toEqual(mockClass);
   });
 
@@ -65,7 +65,7 @@ describe('ClassService', () => {
 
     const classInstance = await ClassService.searchClassById('999');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM classes WHERE id = ?', ['999']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, attributes FROM classes WHERE id = ?', ['999']);
     expect(classInstance).toBeNull();
   });
 
