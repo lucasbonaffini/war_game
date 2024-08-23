@@ -21,7 +21,7 @@ jest.mock('../../config/db', () => ({
 
 describe('SpellService', () => {
   afterEach(() => {
-    jest.clearAllMocks(); // Limpiar los mocks después de cada prueba
+    jest.clearAllMocks();
   });
 
   test('should create a new spell', async () => {
@@ -63,7 +63,7 @@ describe('SpellService', () => {
   });
 
   test('should return null if spell not found by id', async () => {
-    pool.query.mockResolvedValue([[]]); // Simula que no se encontró el hechizo
+    pool.query.mockResolvedValue([[]]);
 
     const spellInstance = await SpellService.searchSpellById('999');
 
@@ -87,7 +87,7 @@ describe('SpellService', () => {
 
   test('should return false if spell not found for update', async () => {
     const updatedSpellData = { name: 'Greater Fireball', description: 'A more powerful fireball', manaCost: 60, damage: 150, duration: 6 };
-    pool.query.mockResolvedValue({ affectedRows: 0 }); // Simula que no se encontró el hechizo
+    pool.query.mockResolvedValue({ affectedRows: 0 });
 
     const updatedSpell = await SpellService.updateSpell('999', updatedSpellData);
 
@@ -108,7 +108,7 @@ describe('SpellService', () => {
   });
 
   test('should return false if spell not found for deletion', async () => {
-    pool.query.mockResolvedValue({ affectedRows: 0 }); // Simula que no se encontró el hechizo
+    pool.query.mockResolvedValue({ affectedRows: 0 });
 
     const result = await SpellService.deleteSpell('999');
 

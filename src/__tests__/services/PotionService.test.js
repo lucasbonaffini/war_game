@@ -19,7 +19,7 @@ jest.mock('../../config/db', () => ({
 
 describe('PotionService', () => {
   afterEach(() => {
-    jest.clearAllMocks(); // Limpiar los mocks después de cada prueba
+    jest.clearAllMocks();
   });
 
   test('should create a new potion', async () => {
@@ -61,7 +61,7 @@ describe('PotionService', () => {
   });
 
   test('should return null if potion not found by id', async () => {
-    pool.query.mockResolvedValue([[]]); // Simula que no se encontró la poción
+    pool.query.mockResolvedValue([[]]);
 
     const potionInstance = await PotionService.searchPotionById('999');
 
@@ -85,7 +85,7 @@ describe('PotionService', () => {
 
   test('should return false if potion not found for update', async () => {
     const updatedPotionData = { name: 'Greater Healing Potion', effects: { hpRestore: 100 }, utility: 'restore more health' };
-    pool.query.mockResolvedValue({ affectedRows: 0 }); // Simula que no se encontró la poción
+    pool.query.mockResolvedValue({ affectedRows: 0 });
 
     const updatedPotion = await PotionService.updatePotion('999', updatedPotionData);
 
@@ -106,7 +106,7 @@ describe('PotionService', () => {
   });
 
   test('should return false if potion not found for deletion', async () => {
-    pool.query.mockResolvedValue({ affectedRows: 0 }); // Simula que no se encontró la poción
+    pool.query.mockResolvedValue({ affectedRows: 0 });
 
     const result = await PotionService.deletePotion('999');
 
