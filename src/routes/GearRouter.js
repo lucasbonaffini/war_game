@@ -15,7 +15,7 @@ router.post('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const gear = await GearService.searchGearById(req.params.id);
-        if (potion) {
+        if (gear) {
             res.status(200).json(gear);
         } else {
             res.status(404).send('Gear not found')
