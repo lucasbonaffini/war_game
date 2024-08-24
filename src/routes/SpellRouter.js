@@ -21,7 +21,6 @@ router.get('/:id', async (req, res, next) => {
             res.status(404).send('Spell not found')
         }
     } catch (error) {
-        console.error('Error finding spell:', error);
         next(error);
     }
 })
