@@ -6,6 +6,8 @@ const pool = require('../../config/db');
 
 jest.mock('../../services/CharacterService');
 jest.mock('../../services/SpellService');
+jest.mock('../../services/WizardService');
+jest.mock('../../services/ClassService');
 jest.mock('../../config/db');
 
 describe('WizardService', () => {
