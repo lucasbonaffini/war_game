@@ -1,15 +1,15 @@
-const WizardService = require('../services/WizardService');
-const CharacterService = require('../services/CharacterService');
-const SpellService = require('../services/SpellService');
-const ClassService = require('../services/ClassService');
-const pool = require('../config/db');
-const Wizard = require('../models/Wizard');
-const Spell = require('../models/Spell');
+const WizardService = require('../../services/WizardService');
+const CharacterService = require('../../services/CharacterService');
+const SpellService = require('../../services/SpellService');
+const ClassService = require('../../services/ClassService');
+const pool = require('../../config/db');
+const Wizard = require('../../models/Wizard');
+const Spell = require('../../models/Spell');
 
-jest.mock('../config/db');
-jest.mock('../services/CharacterService');
-jest.mock('../services/SpellService');
-jest.mock('../services/ClassService');
+jest.mock('../../config/db');
+jest.mock('../../services/CharacterService');
+jest.mock('../../services/SpellService');
+jest.mock('../../services/ClassService');
 
 describe('WizardService', () => {
     describe('createWizard', () => {
