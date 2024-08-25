@@ -1,6 +1,7 @@
 const WizardService = require('../../services/WizardService');
 const CharacterService = require('../../services/CharacterService');
 const SpellService = require('../../services/SpellService');
+const ClassService = require('../../services/ClassService');
 const pool = require('../../config/db');
 
 jest.mock('../../services/CharacterService');
