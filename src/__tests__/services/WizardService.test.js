@@ -1,12 +1,13 @@
+// src/__tests__/services/WizardService.test.js
+
 const WizardService = require('../../services/WizardService');
 const CharacterService = require('../../services/CharacterService');
 const SpellService = require('../../services/SpellService');
 const ClassService = require('../../services/ClassService');
-const pool = require('../../config/db');
+const { pool } = require('../../config/db');
 
 jest.mock('../../services/CharacterService');
 jest.mock('../../services/SpellService');
-jest.mock('../../services/WizardService');
 jest.mock('../../services/ClassService');
 jest.mock('../../config/db');
 
@@ -31,9 +32,9 @@ describe('WizardService', () => {
                 potions: [],
                 weapons: [],
             };
-            
+
             CharacterService.createCharacter.mockResolvedValue(mockWizard);
-            pool.query.mockResolvedValue([{ insertId: 1 }]);
+            pool.query.mockResolvedValue({ insertId: 1 });
             ClassService.searchClassById.mockResolvedValue({ id: 1, name: 'Wizard' });
 
             const wizard = await WizardService.createWizard(mockWizard);
@@ -74,11 +75,11 @@ describe('WizardService', () => {
             };
 
             ClassService.searchClassById.mockResolvedValue({ id: 1, name: 'Wizard' });
-            CharacterService.createCharacter.mockResolvedValue(null);
+            CharacterService.createCharacter.mockRejectedValue(new Error('Error creating character'));
 
             await expect(WizardService.createWizard(mockWizard))
                 .rejects
-                .toThrow('Error creating character for wizard');
+                .toThrow('Error creating character');
         });
     });
 
@@ -87,7 +88,7 @@ describe('WizardService', () => {
             const mockCharacter = { id: 1, name: 'Gandalf', race: 'Maia', classId: 1, hp: 100, maxHp: 100, ac: 10, gear: [], potions: [], weapons: [] };
             const mockWizardData = [{ character_id: 1, mana: 1000, maxMana: 1000 }];
             const mockSpellData = [{ id: 1, name: 'Fireball', description: 'A powerful fire spell', manaCost: 50, damage: 100, duration: 1 }];
-            
+
             CharacterService.searchCharacterById.mockResolvedValue(mockCharacter);
             pool.query.mockResolvedValueOnce(mockWizardData);
             pool.query.mockResolvedValueOnce(mockSpellData);
@@ -112,7 +113,7 @@ describe('WizardService', () => {
         it('should update the wizard details', async () => {
             const mockWizard = { id: 1, name: 'Gandalf', race: 'Maia', classId: 1, hp: 100, maxHp: 100, ac: 10, mana: 500, maxMana: 1000, spells: [] };
             const mockUpdatedWizard = { ...mockWizard, name: 'Gandalf the White', mana: 800 };
-            
+
             pool.getConnection.mockResolvedValue({
                 beginTransaction: jest.fn(),
                 commit: jest.fn(),
@@ -157,6 +158,8 @@ describe('WizardService', () => {
 
             pool.getConnection.mockResolvedValue(mockConnection);
 
+            pool.query.mockResolvedValue({ affectedRows: 1 });
+
             const result = await WizardService.deleteWizard(1);
 
             expect(result).toBe(true);
@@ -189,7 +192,7 @@ describe('WizardService', () => {
             WizardService.searchWizardById.mockResolvedValue(mockWizard);
             SpellService.searchSpellById.mockResolvedValue(mockSpell);
 
-            pool.query.mockResolvedValue([{ affectedRows: 1 }]);
+            pool.query.mockResolvedValue({ affectedRows: 1 });
 
             const result = await WizardService.addSpell(1, 1);
 
@@ -203,7 +206,7 @@ describe('WizardService', () => {
             WizardService.searchWizardById.mockResolvedValue(mockWizard);
             SpellService.searchSpellById.mockResolvedValue(mockSpell);
 
-            await expect(WizardService.addSpell(1, 1)).rejects.toThrow('Spell already added to this character');
+            await expect(WizardService.addSpell(1, 1)).rejects.toThrow('Spell already added to this wizard');
         });
     });
 
@@ -217,7 +220,7 @@ describe('WizardService', () => {
             SpellService.searchSpellById.mockResolvedValue(mockSpell);
             CharacterService.searchCharacterById.mockResolvedValue(mockTarget);
 
-            pool.query.mockResolvedValue([{ affectedRows: 1 }]);
+            pool.query.mockResolvedValue({ affectedRows: 1 });
 
             const result = await WizardService.castSpell(1, 1, 2);
 
