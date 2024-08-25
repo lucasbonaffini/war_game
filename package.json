@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/lucasbonaffini/war_game#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mysql2": "^3.10.3",
@@ -30,4 +31,3 @@
     "supertest": "^7.0.0"
   }
 }
-
