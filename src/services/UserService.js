@@ -15,7 +15,7 @@ class UserService {
     const query = 'SELECT * FROM users WHERE id = ?';
     const [rows] = await pool.query(query, [id]);
     if (rows.length === 0) return null;
-    const { username, password } = rows[0];
+    const { username, password, role } = rows[0];
     return new User(id, username, password, role);
   }
 
