@@ -113,16 +113,23 @@ describe('CharacterService', () => {
     expect(pool.query).toHaveBeenCalledWith('SELECT cw.character_id, w.* FROM character_weapons cw JOIN weapons w ON cw.weapon_id = w.id WHERE cw.character_id = ?', ['1']);
     
     // Check if the character instance is as expected
-    expect(characterInstance).toEqual({
-      ...mockCharacter,
-      gear: mockGear,
-      potions: mockPotions.map(potion => ({
+    expect(characterInstance).toEqual(new Character(
+      '1',
+      'Aragorn',
+      'Human',
+      '1',
+      mockGear,
+      mockPotions.map(potion => ({
         ...potion,
         effects: JSON.parse(potion.effects)
       })),
-      weapons: mockWeapons
-    });
+      mockWeapons,
+      2000,
+      2000,
+      0
+    ));
   });
+  
     
 });
 
