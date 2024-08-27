@@ -38,16 +38,42 @@ describe('CharacterService', () => {
   });
 
   test('should create a new character', async () => {
-    const mockCharacter = { id: '1', name: 'Aragorn', race: 'Human', classId: '1', hp: 2000, maxHp: 2000, ac: 0 };
+    const mockCharacter = {
+      id: '1',
+      name: 'Aragorn',
+      race: 'Human',
+      classId: '1',
+      gear: [],
+      potions: [],
+      weapons: [],
+      hp: 2000,
+      maxHp: 2000,
+      ac: 0
+    };
+  
     pool.query.mockResolvedValue([{ insertId: '1' }]);
     
     const characterInstance = await CharacterService.createCharacter(mockCharacter);
-
+  
     expect(pool.query).toHaveBeenCalledWith(
       'INSERT INTO characters (id, name, race, class_id, hp, maxHp, ac) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [characterInstance.id, characterInstance.name, characterInstance.race, characterInstance.classId, characterInstance.hp, characterInstance.maxHp, characterInstance.ac]
+      [mockCharacter.id, mockCharacter.name, mockCharacter.race, mockCharacter.classId, mockCharacter.hp, mockCharacter.maxHp, mockCharacter.ac]
     );
-    expect(characterInstance).toEqual(mockCharacter);
+    
+    
+    expect(characterInstance).toEqual({
+      id: '1',
+      name: 'Aragorn',
+      race: 'Human',
+      classId: '1',
+      gear: [],
+      potions: [],
+      weapons: [],
+      hp: 2000,
+      maxHp: 2000,
+      ac: 0
+    });
   });
+  
 });
 
