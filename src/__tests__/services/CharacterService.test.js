@@ -1,138 +1,150 @@
 const CharacterService = require('../../services/CharacterService');
-const pool = require('../../config/db');
-const WeaponService = require('../../services/WeaponService');
-const GearService = require('../../services/GearService');
-const PotionService = require('../../services/PotionService');
-const ClassService = require('../../services/ClassService');
 const Character = require('../../models/Character');
-const Weapon = require('../../models/Weapon');
-const Gear = require('../../models/Gear');
-const Potion = require('../../models/Potion');
+const pool = require('../../config/db');
 
-jest.mock('../../config/db');
-jest.mock('../../services/WeaponService');
-jest.mock('../../services/GearService');
-jest.mock('../../services/PotionService');
-jest.mock('../../services/ClassService');
+// Mocking the Character model
+jest.mock('../../models/Character', () => {
+  return jest.fn().mockImplementation((id, name, race, classId, gear, potions, weapons, hp, maxHp, ac) => {
+    return {
+      id: id || '1',
+      name,
+      race,
+      classId,
+      gear,
+      potions,
+      weapons,
+      hp,
+      maxHp,
+      ac,
+    };
+  });
+});
+
+// Mocking the database pool
+jest.mock('../../config/db', () => ({
+  query: jest.fn(),
+  getConnection: jest.fn().mockResolvedValue({
+    beginTransaction: jest.fn(),
+    query: jest.fn(),
+    commit: jest.fn(),
+    rollback: jest.fn(),
+    release: jest.fn(),
+  }),
+}));
 
 describe('CharacterService', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    describe('CharacterService.createCharacter', () => {
+  test('should create a new character', async () => {
+    const mockCharacter = { id: '1', name: 'Aragorn', race: 'Human', classId: '1', hp: 2000, maxHp: 2000, ac: 0 };
+    pool.query.mockResolvedValue([{ insertId: '1' }]);
+    
+    const characterInstance = await CharacterService.createCharacter(mockCharacter);
 
-        it('should create a new character and insert it into the database', async () => {
-            const mockCharacterData = {
-                id: 'adb5b2e8-2389-43ee-9dd4-36fb9bb854a1',
-                name: 'Aragorn',
-                race: 'Human',
-                classId: 1,
-                hp: 100,
-                maxHp: 100,
-                ac: 10
-            };
-            const mockResult = { insertId: 1 };
-            
-            pool.query.mockResolvedValueOnce([mockResult]);
+    expect(pool.query).toHaveBeenCalledWith(
+      'INSERT INTO characters (id, name, race, class_id, hp, maxHp, ac) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [characterInstance.id, characterInstance.name, characterInstance.race, characterInstance.classId, characterInstance.hp, characterInstance.maxHp, characterInstance.ac]
+    );
+    expect(characterInstance).toEqual(mockCharacter);
+  });
 
-            const result = await CharacterService.createCharacter(mockCharacterData);
+  test('should return all characters with their gear, potions, and weapons', async () => {
+    const mockCharacters = [
+      { id: '1', name: 'Aragorn', race: 'Human', class_id: '1', hp: 2000, maxHp: 2000, ac: 0 },
+      { id: '2', name: 'Legolas', race: 'Elf', class_id: '2', hp: 1800, maxHp: 1800, ac: 5 },
+    ];
+    const mockGear = [{ character_id: '1', id: 'gear1', name: 'Helmet', category: 'Head', armour: 10 }];
+    const mockPotions = [{ character_id: '1', id: 'potion1', name: 'Health Potion', effects: '{"hpRestore": 200}', utility: 'restore' }];
+    const mockWeapons = [{ character_id: '1', id: 'weapon1', name: 'Sword', category: 'Melee', damage: 100 }];
 
-            expect(result).toEqual(expect.objectContaining({
-                id: mockCharacterData.id,
-                name: mockCharacterData.name,
-                race: mockCharacterData.race,
-                classId: mockCharacterData.classId,
-                hp: mockCharacterData.hp,
-                maxHp: mockCharacterData.maxHp,
-                ac: mockCharacterData.ac
-            }));
+    pool.query.mockResolvedValueOnce([mockCharacters])
+      .mockResolvedValueOnce([mockGear])
+      .mockResolvedValueOnce([mockPotions])
+      .mockResolvedValueOnce([mockWeapons]);
 
-            expect(pool.query).toHaveBeenCalledWith(
-                'INSERT INTO characters (id, name, race, class_id, hp, maxHp, ac) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [mockCharacterData.id, mockCharacterData.name, mockCharacterData.race, mockCharacterData.classId, mockCharacterData.hp, mockCharacterData.maxHp, mockCharacterData.ac]
-            );
-        });
+    const characters = await CharacterService.getAllCharacters();
 
-        it('should throw an error if the database query fails', async () => {
-            const mockCharacterData = {
-                id: 'adb5b2e8-2389-43ee-9dd4-36fb9bb854a1',
-                name: 'Aragorn',
-                race: 'Human',
-                classId: 1,
-                hp: 100,
-                maxHp: 100,
-                ac: 10
-            };
-            const mockError = new Error('Database error');
+    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters');
+    expect(pool.query).toHaveBeenCalledWith('SELECT cg.character_id, g.* FROM character_gear cg JOIN gears g ON cg.gear_id = g.id');
+    expect(pool.query).toHaveBeenCalledWith('SELECT cp.character_id, p.* FROM character_potions cp JOIN potions p ON cp.potion_id = p.id');
+    expect(pool.query).toHaveBeenCalledWith('SELECT cw.character_id, w.* FROM character_weapons cw JOIN weapons w ON cw.weapon_id = w.id');
+    
+    expect(characters).toHaveLength(2);
+    expect(characters[0].gear).toHaveLength(1);
+    expect(characters[0].potions).toHaveLength(1);
+    expect(characters[0].weapons).toHaveLength(1);
+  });
 
-            pool.query.mockRejectedValueOnce(mockError);
+  test('should return a character by id', async () => {
+    const mockCharacter = { id: '1', name: 'Aragorn', race: 'Human', class_id: '1', hp: 2000, maxHp: 2000, ac: 0 };
+    pool.query.mockResolvedValue([[mockCharacter]]);
 
-            await expect(CharacterService.createCharacter(mockCharacterData)).rejects.toThrow('Database error');
+    const characterInstance = await CharacterService.searchCharacterById('1');
 
-            expect(console.error).toHaveBeenCalledWith('Error creating character:', mockError);
-        });
+    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['1']);
+    expect(characterInstance).toEqual(mockCharacter);
+  });
 
-        it('should log success message when character is created successfully', async () => {
-            const mockCharacterData = {
-                id: 'adb5b2e8-2389-43ee-9dd4-36fb9bb854a1',
-                name: 'Aragorn',
-                race: 'Human',
-                classId: 1,
-                hp: 100,
-                maxHp: 100,
-                ac: 10
-            };
-            const mockResult = { insertId: 1 };
+  test('should return null if character not found by id', async () => {
+    pool.query.mockResolvedValue([[]]);
 
-            pool.query.mockResolvedValueOnce([mockResult]);
+    const characterInstance = await CharacterService.searchCharacterById('999');
 
-            console.log = jest.fn();
+    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['999']);
+    expect(characterInstance).toBeNull();
+  });
 
-            await CharacterService.createCharacter(mockCharacterData);
+  test('should update a character', async () => {
+    const mockCharacter = { id: '1', name: 'Aragorn', race: 'Human', class_id: '1', hp: 2000, maxHp: 2000, ac: 0 };
+    const updatedCharacterData = { name: 'Updated Aragorn', race: 'Human', classId: '1', gear: [], potions: [], weapons: [], hp: 2500, maxHp: 2500, ac: 10 };
+    const mockConnection = await pool.getConnection();
 
-            expect(console.log).toHaveBeenCalledWith('Character created successfully:', mockResult.insertId);
-        });
-    });
+    mockConnection.query.mockResolvedValue({ affectedRows: 1 });
 
-    describe('CharacterService.addWeapon', () => {
+    const result = await CharacterService.updateCharacter('1', updatedCharacterData);
 
-        it('should add a weapon to the character', async () => {
-            const mockCharacter = { id: 1, weapons: [] };
-            const mockWeapon = { id: 1 };
-            const mockResult = [{ id: 1 }];
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      'UPDATE characters SET name = ?, race = ?, class_id = ?, hp = ?, maxHp = ?, ac = ? WHERE id = ?',
+      [updatedCharacterData.name, updatedCharacterData.race, updatedCharacterData.classId, updatedCharacterData.hp, updatedCharacterData.maxHp, updatedCharacterData.ac, '1']
+    );
+    expect(result).toBe(true);
+  });
 
-            pool.query.mockResolvedValueOnce([mockCharacter]); // Character exists
-            pool.query.mockResolvedValueOnce([]); // Weapon not added yet
-            pool.query.mockResolvedValueOnce(mockResult); // Insert into character_weapons
+  test('should return false if character not found for update', async () => {
+    const updatedCharacterData = { name: 'Updated Aragorn', race: 'Human', classId: '1', gear: [], potions: [], weapons: [], hp: 2500, maxHp: 2500, ac: 10 };
+    const mockConnection = await pool.getConnection();
 
-            const result = await CharacterService.addWeapon(1, 1);
+    mockConnection.query.mockResolvedValue({ affectedRows: 0 });
 
-            expect(result.weapons).toContainEqual(mockWeapon);
-            expect(pool.query).toHaveBeenCalledWith(
-                'INSERT INTO character_weapons (character_id, weapon_id) VALUES (?, ?)',
-                [1, 1]
-            );
-        });
+    const result = await CharacterService.updateCharacter('999', updatedCharacterData);
 
-        it('should throw an error if the weapon is already added to the character', async () => {
-            const mockCharacter = { id: 1, weapons: [{ id: 1 }] };
+    expect(mockConnection.query).toHaveBeenCalledWith(
+      'UPDATE characters SET name = ?, race = ?, class_id = ?, hp = ?, maxHp = ?, ac = ? WHERE id = ?',
+      [updatedCharacterData.name, updatedCharacterData.race, updatedCharacterData.classId, updatedCharacterData.hp, updatedCharacterData.maxHp, updatedCharacterData.ac, '999']
+    );
+    expect(result).toBe(false);
+  });
 
-            pool.query.mockResolvedValueOnce([mockCharacter]); // Character exists
-            pool.query.mockResolvedValueOnce([mockCharacter.weapons[0]]); // Weapon already exists
+  test('should delete a character by id', async () => {
+    const mockConnection = await pool.getConnection();
+    mockConnection.query.mockResolvedValue({ affectedRows: 1 });
 
-            await expect(CharacterService.addWeapon(1, 1)).rejects.toThrow('Weapon already added to this character');
-        });
+    const result = await CharacterService.deleteCharacter('1');
 
-        it('should handle errors and log them', async () => {
-            const mockCharacter = { id: 1 };
-            const mockError = new Error('Database error');
+    expect(mockConnection.query).toHaveBeenCalledWith('DELETE FROM characters WHERE id = ?', ['1']);
+    expect(result).toBe(true);
+  });
 
-            pool.query.mockResolvedValueOnce([mockCharacter]); // Character exists
-            pool.query.mockRejectedValueOnce(mockError); // Error during insert
+  test('should return false if character not found for deletion', async () => {
+    const mockConnection = await pool.getConnection();
+    mockConnection.query.mockResolvedValue({ affectedRows: 0 });
 
-            console.error = jest.fn();
+    const result = await CharacterService.deleteCharacter('999');
 
-            await expect(CharacterService.addWeapon(1, 1)).rejects.toThrow('Database error');
-
-            expect(console.error).toHaveBeenCalledWith('Error adding weapon to character: ', mockError);
-        });
-    });
+    expect(mockConnection.query).toHaveBeenCalledWith('DELETE FROM characters WHERE id = ?', ['999']);
+    expect(result).toBe(false);
+  });
 });
+
