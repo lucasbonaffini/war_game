@@ -282,7 +282,7 @@ class CharacterService {
             );
     
             if (rows.length > 0) {
-                throw new Error('Gear already added to this character');
+                throw new Error("Weapon already exists in character's inventory");
             }
     
             // Add the gear to the character
@@ -343,7 +343,7 @@ class CharacterService {
             );
     
             if (rows.length > 0) {
-                throw new Error('Potion already added to this character');
+                throw new Error("Potion already exists in character's inventory");
             }
     
             // add the potion
@@ -437,7 +437,7 @@ class CharacterService {
             const healingPotion = character.potions.find(potion => potion.effects.hpRestore > 0);
     
             if (!healingPotion) {
-                throw new Error('No healing potions available');
+                throw new Error("Potion does not exist in character's inventory");
             }
 
             if (character.hp === character.maxHp) {
