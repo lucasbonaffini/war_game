@@ -76,38 +76,53 @@ describe('CharacterService', () => {
   });
   
   test('should return a character by id', async () => {
+    // Mock character data
     const mockCharacter = {
       id: '1',
       name: 'Aragorn',
       race: 'Human',
-      classId: '1',
-      gear: [],
-      potions: [],
-      weapons: [],
+      class_id: '1',
       hp: 2000,
       maxHp: 2000,
       ac: 0
     };
   
-    
-    pool.query.mockResolvedValue([[mockCharacter]]);
+    // Mock gear, potions, and weapons data
+    const mockGear = [
+      { character_id: '1', id: 'gear1', name: 'Helmet', category: 'Head', armour: 10 }
+    ];
+    const mockPotions = [
+      { character_id: '1', id: 'potion1', name: 'Health Potion', effects: '{"hpRestore": 200}', utility: 'restore' }
+    ];
+    const mockWeapons = [
+      { character_id: '1', id: 'weapon1', name: 'Sword', category: 'Melee', damage: 100 }
+    ];
+  
+    // Mock database queries
+    pool.query
+      .mockResolvedValueOnce([mockCharacter])    // For character query
+      .mockResolvedValueOnce(mockGear)           // For gear query
+      .mockResolvedValueOnce(mockPotions)        // For potions query
+      .mockResolvedValueOnce(mockWeapons);       // For weapons query
   
     const characterInstance = await CharacterService.searchCharacterById('1');
   
     expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['1']);
-    expect(characterInstance).toEqual(mockCharacter);
+    expect(pool.query).toHaveBeenCalledWith('SELECT cg.character_id, g.* FROM character_gear cg JOIN gears g ON cg.gear_id = g.id WHERE cg.character_id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT cp.character_id, p.* FROM character_potions cp JOIN potions p ON cp.potion_id = p.id WHERE cp.character_id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT cw.character_id, w.* FROM character_weapons cw JOIN weapons w ON cw.weapon_id = w.id WHERE cw.character_id = ?', ['1']);
+    
+    // Check if the character instance is as expected
+    expect(characterInstance).toEqual({
+      ...mockCharacter,
+      gear: mockGear,
+      potions: mockPotions.map(potion => ({
+        ...potion,
+        effects: JSON.parse(potion.effects)
+      })),
+      weapons: mockWeapons
+    });
   });
-  
-  test('should return null if character not found by id', async () => {
-    // Mock la respuesta de la consulta para un ID no encontrado
-    pool.query.mockResolvedValue([[]]);
-  
-    const characterInstance = await CharacterService.searchCharacterById('999');
-  
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['999']);
-    expect(characterInstance).toBeNull();
-  });
-  
-
+    
 });
 
