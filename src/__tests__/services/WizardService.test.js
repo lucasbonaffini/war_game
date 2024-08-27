@@ -1,118 +1,126 @@
 const WizardService = require('../../services/WizardService');
-const Wizard = require('../../models/Wizard');
 const pool = require('../../config/db');
 
-jest.mock('../../models/Wizard', () => {
-  return jest.fn().mockImplementation((id, name, mana, maxMana, classId) => {
-    return {
-      id: id || '1',
-      name,
-      mana,
-      maxMana,
-      classId,
-    };
-  });
-});
-
-jest.mock('../../config/db', () => ({
-  query: jest.fn(),
-}));
+jest.mock('../../config/db');
 
 describe('WizardService', () => {
+  let connection;
+
+  beforeEach(() => {
+    connection = {
+      query: jest.fn(),
+      beginTransaction: jest.fn(),
+      commit: jest.fn(),
+      rollback: jest.fn(),
+      release: jest.fn(),
+    };
+    pool.getConnection.mockResolvedValue(connection);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   test('should create a new wizard', async () => {
-    const mockWizard = { id: '1', name: 'Gandalf', mana: 1000, maxMana: 1000, classId: 1 };
-    pool.query.mockResolvedValue([{ insertId: 1 }]);
+    const mockWizard = { id: '1', name: 'Gandalf', race: 'Maiar', classId: '1', hp: 100, maxHp: 100, ac: 15, mana: 1000, maxMana: 1000 };
+    const mockClass = { id: '1', name: 'Wizard', abilities: [] };
     
+    connection.query.mockResolvedValueOnce([{ insertId: 1 }]);
+    ClassService.searchClassById = jest.fn().mockResolvedValue(mockClass);
+
     const wizardInstance = await WizardService.createWizard(mockWizard);
 
-    expect(pool.query).toHaveBeenCalledWith(
-      'INSERT INTO wizards (id, name, mana, maxMana, classId) VALUES (?, ?, ?, ?, ?)',
-      [mockWizard.id, mockWizard.name, mockWizard.mana, mockWizard.maxMana, mockWizard.classId]
+    expect(connection.query).toHaveBeenCalledWith(
+      'INSERT INTO characters (name, race, classId, hp, maxHp, ac, mana, maxMana) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [mockWizard.name, mockWizard.race, mockWizard.classId, mockWizard.hp, mockWizard.maxHp, mockWizard.ac, mockWizard.mana, mockWizard.maxMana]
     );
-    expect(wizardInstance).toEqual(mockWizard);
+    expect(wizardInstance).toEqual(expect.objectContaining(mockWizard));
   });
 
   test('should return all wizards', async () => {
     const mockWizards = [
-      { id: '1', name: 'Gandalf', mana: 1000, maxMana: 1000, classId: 1 },
-      { id: '2', name: 'Saruman', mana: 1200, maxMana: 1200, classId: 1 },
+      { id: '1', name: 'Gandalf', race: 'Maiar', classId: '1', hp: 100, maxHp: 100, ac: 15, mana: 1000, maxMana: 1000 },
+      { id: '2', name: 'Saruman', race: 'Maiar', classId: '1', hp: 90, maxHp: 90, ac: 14, mana: 900, maxMana: 900 },
     ];
-    pool.query.mockResolvedValue([mockWizards]);
+
+    connection.query.mockResolvedValue([mockWizards]);
 
     const wizards = await WizardService.getAllWizards();
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM wizards');
+    expect(connection.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE classId = (SELECT id FROM classes WHERE name = ?)', ['Wizard']);
     expect(wizards).toHaveLength(2);
     expect(wizards[0].name).toBe('Gandalf');
     expect(wizards[1].name).toBe('Saruman');
   });
 
   test('should return a wizard by id', async () => {
-    const mockWizard = { id: '1', name: 'Gandalf', mana: 1000, maxMana: 1000, classId: 1 };
-    pool.query.mockResolvedValue([[mockWizard]]);
+    const mockWizard = { id: '1', name: 'Gandalf', race: 'Maiar', classId: '1', hp: 100, maxHp: 100, ac: 15, mana: 1000, maxMana: 1000 };
+    const mockClass = { id: '1', name: 'Wizard', abilities: [] };
+
+    connection.query.mockResolvedValueOnce([[mockWizard]]);
+    ClassService.searchClassById = jest.fn().mockResolvedValue(mockClass);
 
     const wizardInstance = await WizardService.searchWizardById('1');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM wizards WHERE id = ?', ['1']);
+    expect(connection.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['1']);
     expect(wizardInstance).toEqual(mockWizard);
   });
 
   test('should return null if wizard not found by id', async () => {
-    pool.query.mockResolvedValue([[]]);
+    connection.query.mockResolvedValueOnce([[]]);
 
     const wizardInstance = await WizardService.searchWizardById('999');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM wizards WHERE id = ?', ['999']);
+    expect(connection.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['999']);
     expect(wizardInstance).toBeNull();
   });
 
   test('should update a wizard', async () => {
-    const mockWizard = { id: '1', name: 'Gandalf', mana: 1000, maxMana: 1000, classId: 1 };
-    const updatedWizardData = { name: 'Gandalf the White', mana: 1500, maxMana: 1500 };
-    pool.query.mockResolvedValue({ affectedRows: 1 });
+    const mockWizard = { id: '1', name: 'Gandalf', race: 'Maiar', classId: '1', hp: 100, maxHp: 100, ac: 15, mana: 1000, maxMana: 1000 };
+    const updatedWizardData = { name: 'Gandalf the White', race: 'Maiar', classId: '1', hp: 150, maxHp: 150, ac: 20, mana: 2000, maxMana: 2000 };
+
+    connection.query.mockResolvedValueOnce({ affectedRows: 1 });
 
     const updatedWizard = await WizardService.updateWizard('1', updatedWizardData);
 
-    expect(pool.query).toHaveBeenCalledWith(
-      'UPDATE wizards SET name = ?, mana = ?, maxMana = ? WHERE id = ?',
-      [updatedWizardData.name, updatedWizardData.mana, updatedWizardData.maxMana, '1']
+    expect(connection.query).toHaveBeenCalledWith(
+      'UPDATE characters SET name = ?, race = ?, classId = ?, hp = ?, maxHp = ?, ac = ?, mana = ?, maxMana = ? WHERE id = ?',
+      [updatedWizardData.name, updatedWizardData.race, updatedWizardData.classId, updatedWizardData.hp, updatedWizardData.maxHp, updatedWizardData.ac, updatedWizardData.mana, updatedWizardData.maxMana, '1']
     );
     expect(updatedWizard).toBe(true);
   });
 
   test('should return false if wizard not found for update', async () => {
-    const updatedWizardData = { name: 'Gandalf the White', mana: 1500, maxMana: 1500 };
-    pool.query.mockResolvedValue({ affectedRows: 0 });
+    const updatedWizardData = { name: 'Gandalf the White', race: 'Maiar', classId: '1', hp: 150, maxHp: 150, ac: 20, mana: 2000, maxMana: 2000 };
+
+    connection.query.mockResolvedValueOnce({ affectedRows: 0 });
 
     const updatedWizard = await WizardService.updateWizard('999', updatedWizardData);
 
-    expect(pool.query).toHaveBeenCalledWith(
-      'UPDATE wizards SET name = ?, mana = ?, maxMana = ? WHERE id = ?',
-      [updatedWizardData.name, updatedWizardData.mana, updatedWizardData.maxMana, '999']
+    expect(connection.query).toHaveBeenCalledWith(
+      'UPDATE characters SET name = ?, race = ?, classId = ?, hp = ?, maxHp = ?, ac = ?, mana = ?, maxMana = ? WHERE id = ?',
+      [updatedWizardData.name, updatedWizardData.race, updatedWizardData.classId, updatedWizardData.hp, updatedWizardData.maxHp, updatedWizardData.ac, updatedWizardData.mana, updatedWizardData.maxMana, '999']
     );
     expect(updatedWizard).toBe(false);
   });
 
   test('should delete a wizard by id', async () => {
-    pool.query.mockResolvedValue({ affectedRows: 1 });
+    connection.query.mockResolvedValueOnce({ affectedRows: 1 });
 
     const result = await WizardService.deleteWizard('1');
 
-    expect(pool.query).toHaveBeenCalledWith('DELETE FROM wizards WHERE id = ?', ['1']);
+    expect(connection.query).toHaveBeenCalledWith('DELETE FROM characters WHERE id = ?', ['1']);
     expect(result).toBe(true);
   });
 
   test('should return false if wizard not found for deletion', async () => {
-    pool.query.mockResolvedValue({ affectedRows: 0 });
+    connection.query.mockResolvedValueOnce({ affectedRows: 0 });
 
     const result = await WizardService.deleteWizard('999');
 
-    expect(pool.query).toHaveBeenCalledWith('DELETE FROM wizards WHERE id = ?', ['999']);
+    expect(connection.query).toHaveBeenCalledWith('DELETE FROM characters WHERE id = ?', ['999']);
     expect(result).toBe(false);
   });
 });
+
 
