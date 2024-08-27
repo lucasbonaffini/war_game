@@ -434,30 +434,33 @@ class CharacterService {
                 throw new Error('Character not found');
             }
     
-            const healingPotion = character.potions.find(potion => potion.effects.hpRestore);
+            const healingPotion = character.potions.find(potion => potion.effects.hpRestore > 0);
     
             if (!healingPotion) {
                 throw new Error('No healing potions available');
             }
 
             if (character.hp === character.maxHp) {
-              throw new Error('Your HP is full! Keep combat warrior')
+                throw new Error('Your HP is full! Keep fighting, warrior!');
             }
     
             character.hp = Math.min(character.hp + healingPotion.effects.hpRestore, character.maxHp);
     
             // Remove the used potion from the character's potions array
-            character.potions = character.potions.filter(potion => potion !== healingPotion);
+            character.potions = character.potions.filter(potion => potion.id !== healingPotion.id);
     
             // Update the character's HP in the database
             await pool.query('UPDATE characters SET hp = ? WHERE id = ?', [character.hp, character.id]);
     
-            // Update the character's potions in the database
-            await pool.query('UPDATE characters SET potions = ? WHERE id = ?', [JSON.stringify(character.potions), character.id]);
+            // Update the character's potions in the database by removing the used potion from the join table
+            await pool.query('DELETE FROM character_potions WHERE character_id = ? AND potion_id = ?', [characterId, healingPotion.id]);
     
-            return character;
+            return {
+                message: `${character.name} has been healed by ${healingPotion.effects.hpRestore} HP. Current HP: ${character.hp}/${character.maxHp}`,
+                character
+            };
         } catch (error) {
-            console.error('Error healing character:', error);
+            console.error('Error during healing:', error);
             throw error;
         }
     }
