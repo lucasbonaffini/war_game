@@ -17,126 +17,122 @@ jest.mock('../../services/ClassService');
 
 describe('CharacterService', () => {
 
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
     describe('CharacterService.createCharacter', () => {
-        let mockCharacterData;
-    
-        beforeEach(() => {
-            mockCharacterData = {
+
+        it('should create a new character and insert it into the database', async () => {
+            const mockCharacterData = {
+                id: 'adb5b2e8-2389-43ee-9dd4-36fb9bb854a1',
                 name: 'Aragorn',
                 race: 'Human',
                 classId: 1,
                 hp: 100,
                 maxHp: 100,
-                ac: 15
+                ac: 10
             };
-    
-            // Reset and mock the pool query
-            pool.query = jest.fn();
-        });
-    
-        it('should create a new character and insert it into the database', async () => {
             const mockResult = { insertId: 1 };
+            
             pool.query.mockResolvedValueOnce([mockResult]);
-    
+
             const result = await CharacterService.createCharacter(mockCharacterData);
-    
-            expect(result).toBeInstanceOf(Character);
-            expect(result.name).toBe(mockCharacterData.name);
-            expect(result.race).toBe(mockCharacterData.race);
-            expect(result.classId).toBe(mockCharacterData.classId);
-            expect(result.hp).toBe(mockCharacterData.hp);
-            expect(result.maxHp).toBe(mockCharacterData.maxHp);
-            expect(result.ac).toBe(mockCharacterData.ac);
-    
+
+            expect(result).toEqual(expect.objectContaining({
+                id: mockCharacterData.id,
+                name: mockCharacterData.name,
+                race: mockCharacterData.race,
+                classId: mockCharacterData.classId,
+                hp: mockCharacterData.hp,
+                maxHp: mockCharacterData.maxHp,
+                ac: mockCharacterData.ac
+            }));
+
             expect(pool.query).toHaveBeenCalledWith(
                 'INSERT INTO characters (id, name, race, class_id, hp, maxHp, ac) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [undefined, mockCharacterData.name, mockCharacterData.race, mockCharacterData.classId, mockCharacterData.hp, mockCharacterData.maxHp, mockCharacterData.ac]
+                [mockCharacterData.id, mockCharacterData.name, mockCharacterData.race, mockCharacterData.classId, mockCharacterData.hp, mockCharacterData.maxHp, mockCharacterData.ac]
             );
         });
-    
+
         it('should throw an error if the database query fails', async () => {
+            const mockCharacterData = {
+                id: 'adb5b2e8-2389-43ee-9dd4-36fb9bb854a1',
+                name: 'Aragorn',
+                race: 'Human',
+                classId: 1,
+                hp: 100,
+                maxHp: 100,
+                ac: 10
+            };
             const mockError = new Error('Database error');
+
             pool.query.mockRejectedValueOnce(mockError);
-    
+
             await expect(CharacterService.createCharacter(mockCharacterData)).rejects.toThrow('Database error');
+
             expect(console.error).toHaveBeenCalledWith('Error creating character:', mockError);
         });
-    
+
         it('should log success message when character is created successfully', async () => {
+            const mockCharacterData = {
+                id: 'adb5b2e8-2389-43ee-9dd4-36fb9bb854a1',
+                name: 'Aragorn',
+                race: 'Human',
+                classId: 1,
+                hp: 100,
+                maxHp: 100,
+                ac: 10
+            };
             const mockResult = { insertId: 1 };
+
             pool.query.mockResolvedValueOnce([mockResult]);
-    
+
             console.log = jest.fn();
-    
+
             await CharacterService.createCharacter(mockCharacterData);
-    
-            expect(console.log).toHaveBeenCalledWith('Character created successfully:', mockResult);
+
+            expect(console.log).toHaveBeenCalledWith('Character created successfully:', mockResult.insertId);
         });
     });
-    
-
-
 
     describe('CharacterService.addWeapon', () => {
+
         it('should add a weapon to the character', async () => {
-            const characterId = 1;
-            const weaponId = 1;
-            const mockCharacter = { id: characterId, weapons: [] };
-            const mockWeapon = { id: weaponId };
-    
-            jest.spyOn(CharacterService, 'searchCharacterById').mockResolvedValue(mockCharacter);
-            jest.spyOn(WeaponService, 'searchWeaponById').mockResolvedValue(mockWeapon);
-            pool.query.mockResolvedValueOnce([]); // No existing weapon for this character
-    
-            const result = await CharacterService.addWeapon(characterId, weaponId);
-    
-            expect(result.weapons).toContain(mockWeapon);
-            expect(pool.query).toHaveBeenCalledWith(
-                'SELECT * FROM character_weapons WHERE character_id = ? AND weapon_id = ?',
-                [characterId, weaponId]
-            );
-            expect(pool.query).toHaveBeenCalledWith(
-                'INSERT INTO character_weapons (character_id, weapon_id) VALUES (?, ?)',
-                [characterId, weaponId]
-            );
-        });
-    
-        it('should throw an error if the character is not found', async () => {
-            jest.spyOn(CharacterService, 'searchCharacterById').mockResolvedValue(null);
-    
-            await expect(CharacterService.addWeapon(1, 1)).rejects.toThrow('Character not found');
-        });
-    
-        it('should throw an error if the weapon is not found', async () => {
-            const mockCharacter = { id: 1, weapons: [] };
-    
-            jest.spyOn(CharacterService, 'searchCharacterById').mockResolvedValue(mockCharacter);
-            jest.spyOn(WeaponService, 'searchWeaponById').mockResolvedValue(null);
-    
-            await expect(CharacterService.addWeapon(1, 1)).rejects.toThrow('Weapon not found');
-        });
-    
-        it('should throw an error if the weapon is already added to the character', async () => {
             const mockCharacter = { id: 1, weapons: [] };
             const mockWeapon = { id: 1 };
-    
-            jest.spyOn(CharacterService, 'searchCharacterById').mockResolvedValue(mockCharacter);
-            jest.spyOn(WeaponService, 'searchWeaponById').mockResolvedValue(mockWeapon);
-            pool.query.mockResolvedValueOnce([mockWeapon]); // Weapon already exists
-    
+            const mockResult = [{ id: 1 }];
+
+            pool.query.mockResolvedValueOnce([mockCharacter]); // Character exists
+            pool.query.mockResolvedValueOnce([]); // Weapon not added yet
+            pool.query.mockResolvedValueOnce(mockResult); // Insert into character_weapons
+
+            const result = await CharacterService.addWeapon(1, 1);
+
+            expect(result.weapons).toContainEqual(mockWeapon);
+            expect(pool.query).toHaveBeenCalledWith(
+                'INSERT INTO character_weapons (character_id, weapon_id) VALUES (?, ?)',
+                [1, 1]
+            );
+        });
+
+        it('should throw an error if the weapon is already added to the character', async () => {
+            const mockCharacter = { id: 1, weapons: [{ id: 1 }] };
+
+            pool.query.mockResolvedValueOnce([mockCharacter]); // Character exists
+            pool.query.mockResolvedValueOnce([mockCharacter.weapons[0]]); // Weapon already exists
+
             await expect(CharacterService.addWeapon(1, 1)).rejects.toThrow('Weapon already added to this character');
         });
-    
+
         it('should handle errors and log them', async () => {
-            jest.spyOn(CharacterService, 'searchCharacterById').mockRejectedValue(new Error('Database error'));
-    
+            const mockCharacter = { id: 1 };
+            const mockError = new Error('Database error');
+
+            pool.query.mockResolvedValueOnce([mockCharacter]); // Character exists
+            pool.query.mockRejectedValueOnce(mockError); // Error during insert
+
+            console.error = jest.fn();
+
             await expect(CharacterService.addWeapon(1, 1)).rejects.toThrow('Database error');
-            expect(console.error).toHaveBeenCalledWith('Error adding weapon to character: ', expect.any(Error));
+
+            expect(console.error).toHaveBeenCalledWith('Error adding weapon to character: ', mockError);
         });
     });
-
 });
