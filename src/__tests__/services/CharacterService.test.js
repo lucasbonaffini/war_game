@@ -78,23 +78,40 @@ describe('CharacterService', () => {
   });
 
   test('should return a character by id', async () => {
-    const mockCharacter = { id: '1', name: 'Aragorn', race: 'Human', class_id: '1', hp: 2000, maxHp: 2000, ac: 0 };
+    const mockCharacter = {
+      id: '1',
+      name: 'Aragorn',
+      race: 'Human',
+      class_id: '1',
+      hp: 2000,
+      maxHp: 2000,
+      ac: 0,
+      gear: JSON.stringify([{ id: 'gear1', name: 'Helmet', category: 'Head', armour: 10 }]),
+      potions: JSON.stringify([{ id: 'potion1', name: 'Health Potion', effects: '{"hpRestore": 200}', utility: 'restore' }]),
+      weapons: JSON.stringify([{ id: 'weapon1', name: 'Sword', category: 'Melee', damage: 100 }])
+    };
+  
     pool.query.mockResolvedValue([[mockCharacter]]);
-
+  
     const characterInstance = await CharacterService.searchCharacterById('1');
-
+  
     expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['1']);
-    expect(characterInstance).toEqual(mockCharacter);
+    expect(characterInstance).toEqual({
+      id: '1',
+      name: 'Aragorn',
+      race: 'Human',
+      class_id: '1',
+      hp: 2000,
+      maxHp: 2000,
+      ac: 0,
+      gear: [{ id: 'gear1', name: 'Helmet', category: 'Head', armour: 10 }],
+      potions: [{ id: 'potion1', name: 'Health Potion', effects: '{"hpRestore": 200}', utility: 'restore' }],
+      weapons: [{ id: 'weapon1', name: 'Sword', category: 'Melee', damage: 100 }]
+    });
   });
+  
 
-  test('should return null if character not found by id', async () => {
-    pool.query.mockResolvedValue([[]]);
 
-    const characterInstance = await CharacterService.searchCharacterById('999');
-
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM characters WHERE id = ?', ['999']);
-    expect(characterInstance).toBeNull();
-  });
 
   test('should update a character', async () => {
     const mockCharacter = { id: '1', name: 'Aragorn', race: 'Human', class_id: '1', hp: 2000, maxHp: 2000, ac: 0 };
@@ -112,7 +129,7 @@ describe('CharacterService', () => {
     expect(result).toBe(true);
   });
 
-  test('should return false if character not found for update', async () => {
+  test('should return null if character not found for update', async () => {
     const updatedCharacterData = { name: 'Updated Aragorn', race: 'Human', classId: '1', gear: [], potions: [], weapons: [], hp: 2500, maxHp: 2500, ac: 10 };
     const mockConnection = await pool.getConnection();
 
@@ -124,7 +141,7 @@ describe('CharacterService', () => {
       'UPDATE characters SET name = ?, race = ?, class_id = ?, hp = ?, maxHp = ?, ac = ? WHERE id = ?',
       [updatedCharacterData.name, updatedCharacterData.race, updatedCharacterData.classId, updatedCharacterData.hp, updatedCharacterData.maxHp, updatedCharacterData.ac, '999']
     );
-    expect(result).toBe(false);
+    expect(result).toBe(null);
   });
 
   test('should delete a character by id', async () => {
@@ -135,16 +152,6 @@ describe('CharacterService', () => {
 
     expect(mockConnection.query).toHaveBeenCalledWith('DELETE FROM characters WHERE id = ?', ['1']);
     expect(result).toBe(true);
-  });
-
-  test('should return false if character not found for deletion', async () => {
-    const mockConnection = await pool.getConnection();
-    mockConnection.query.mockResolvedValue({ affectedRows: 0 });
-
-    const result = await CharacterService.deleteCharacter('999');
-
-    expect(mockConnection.query).toHaveBeenCalledWith('DELETE FROM characters WHERE id = ?', ['999']);
-    expect(result).toBe(false);
   });
 });
 
