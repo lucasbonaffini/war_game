@@ -6,7 +6,7 @@ const pool = require('../../config/db');
 
 // Mock de las dependencias externas
 jest.mock('../../services/CharacterService');
-jest.mock('../,,/services/SpellService');
+jest.mock('../../services/SpellService');
 jest.mock('../../services/ClassService');
 jest.mock('../../config/db', () => ({
     getConnection: jest.fn(() => ({
