@@ -20,7 +20,7 @@ class GearService {
     }
     static async searchGearById(id) {
         try {
-            const [rows] = await pool.query('SELECT * FROM gears WHERE id = ?', [id]);
+            const [rows] = await pool.query('SELECT id, name, category, armour FROM gears WHERE id = ?', [id]);
             if(rows.length > 0) {
                 const gear = rows[0];
                 return new Gear(
@@ -67,7 +67,7 @@ class GearService {
       }
       static async getAllGears() {
         try {
-          const [rows] = await pool.query('SELECT * FROM gears');
+          const [rows] = await pool.query('SELECT id, name, category, armour FROM gears');
           const gears = rows.map(gear => new Gear(
             gear.id,
             gear.name,

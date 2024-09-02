@@ -27,142 +27,118 @@ class CharacterService {
     }
 
     static async searchCharacterById(id) {
-      try {
-          // Query for the character
-          const [characterRows] = await pool.query('SELECT * FROM characters WHERE id = ?', [id]);
-          if (characterRows.length === 0) {
-              return null;
-          }
-  
-          const characterData = characterRows[0];
-  
-          // Create the character instance
-          const character = new Character(
-              characterData.id,
-              characterData.name,
-              characterData.race,
-              characterData.class_id,
-              [], // Empty gear array, will populate below
-              [], // Empty potions array, will populate below
-              [], // Empty weapons array, will populate below
-              characterData.hp,
-              characterData.maxHp,
-              characterData.ac
-          );
-  
-          // Fetch and add potions
-          const [potionRows] = await pool.query(`
-              SELECT p.* FROM potions p
-              INNER JOIN character_potions cp ON p.id = cp.potion_id
-              WHERE cp.character_id = ?`, [id]);
-  
-          character.potions = potionRows.map(potionData => new Potion(
-              potionData.id,
-              potionData.name,
-              JSON.parse(potionData.effects),
-              potionData.utility
-          ));
-  
-          // Fetch and add gear
-          const [gearRows] = await pool.query(`
-              SELECT g.* FROM gears g
-              INNER JOIN character_gear cg ON g.id = cg.gear_id
-              WHERE cg.character_id = ?`, [id]);
-  
-          character.gear = gearRows.map(gearData => new Gear(
-              gearData.id,
-              gearData.name,
-              gearData.category,
-              gearData.armour
-          ));
-  
-          // Fetch and add weapons
-          const [weaponRows] = await pool.query(`
-              SELECT w.* FROM weapons w
-              INNER JOIN character_weapons cw ON w.id = cw.weapon_id
-              WHERE cw.character_id = ?`, [id]);
-  
-          character.weapons = weaponRows.map(weaponData => new Weapon(
-              weaponData.id,
-              weaponData.name,
-              weaponData.category,
-              weaponData.damage
-          ));
-          
-          return character;
-      } catch (error) {
-          console.error('Error finding character by id:', error);
-          throw error;
-      }
-  }
-  
+        try {
+            const [characterRows] = await pool.query('SELECT id, name, race, class_id, hp, maxHp, ac FROM characters WHERE id = ?', [id]);
+            if (characterRows.length === 0) {
+                throw new Error('Character not found');
+            }
+            const character = characterRows[0];
+    
+            // Fetch and add potions
+            const [potionRows] = await pool.query(`
+                SELECT p.* FROM potions p
+                INNER JOIN character_potions cp ON p.id = cp.potion_id
+                WHERE cp.character_id = ?`, [id]);
+    
+            // Fetch and add weapons
+            const [weaponRows] = await pool.query(`
+                SELECT w.* FROM weapons w
+                INNER JOIN character_weapons cw ON w.id = cw.weapon_id
+                WHERE cw.character_id = ?`, [id]);
+    
+            // Fetch and add gear
+            const [gearRows] = await pool.query(`
+                SELECT g.* FROM gears g
+                INNER JOIN character_gears cg ON g.id = cg.gear_id
+                WHERE cg.character_id = ?`, [id]);
+    
+            return {
+                ...character,
+                potions: potionRows,
+                weapons: weaponRows,
+                gear: gearRows
+            };
+        } catch (error) {
+            console.error('Error finding character by id:', error);
+            throw error;
+        }
+    }
 
-    static async updateCharacter(id, { name, race, classId, gear, potions, weapons, hp, maxHp, ac }) {
-      const connection = await pool.getConnection();
-      try {
-          await connection.beginTransaction();
-  
-          // Update character main details
-          const [result] = await connection.query(
-              'UPDATE characters SET name = ?, race = ?, class_id = ?, hp = ?, maxHp = ?, ac = ? WHERE id = ?',
-              [name, race, classId, hp, maxHp, ac, id]
-          );
-  
-          if (result.affectedRows === 0) {
-              throw new Error('Character not found');
-          }
-  
-          // Update character's gear
-          await connection.query('DELETE FROM character_gear WHERE character_id = ?', [id]);
-          for (const gearItem of gear) {
-              await connection.query('INSERT INTO character_gear (character_id, gear_id) VALUES (?, ?)', [id, gearItem.id]);
-          }
-  
-          // Update character's potions
-          await connection.query('DELETE FROM character_potions WHERE character_id = ?', [id]);
-          for (const potion of potions) {
-              await connection.query('INSERT INTO character_potions (character_id, potion_id) VALUES (?, ?)', [id, potion.id]);
-          }
-  
-          // Update character's weapons
-          await connection.query('DELETE FROM character_weapons WHERE character_id = ?', [id]);
-          for (const weapon of weapons) {
-              await connection.query('INSERT INTO character_weapons (character_id, weapon_id) VALUES (?, ?)', [id, weapon.id]);
-          }
-  
-          await connection.commit();
-          console.log('Character updated successfully');
-          return true;
-      } catch (error) {
-          await connection.rollback();
-          console.error('Error updating character:', error);
-          throw error;
-      } finally {
-          connection.release();
-      }
-  }
-  
+  static async updateCharacter(id, characterData) {
+    const {
+        name,
+        race,
+        classId,
+        gear = [],
+        potions = [],
+        weapons = [],
+        hp,
+        maxHp,
+        ac
+    } = characterData;
 
-  static async deleteCharacter(id) {
     const connection = await pool.getConnection();
+
     try {
         await connection.beginTransaction();
 
-        // Delete from join tables
-        await connection.query('DELETE FROM character_gear WHERE character_id = ?', [id]);
+        
+        const updateResult = await connection.query(
+            'UPDATE characters SET name = ?, race = ?, class_id = ?, hp = ?, maxHp = ?, ac = ? WHERE id = ?',
+            [name, race, classId, hp, maxHp, ac, id]
+        );
+
+        if (updateResult.affectedRows === 0) {
+            throw new Error('Character not found');
+        }
+
+        
+        await connection.query('DELETE FROM character_gears WHERE character_id = ?', [id]);
+        for (const gearId of gear) {
+            await connection.query('INSERT INTO character_gears (character_id, gear_id) VALUES (?, ?)', [id, gearId]);
+        }
+
+        
+        await connection.query('DELETE FROM character_potions WHERE character_id = ?', [id]);
+        for (const potionId of potions) {
+            await connection.query('INSERT INTO character_potions (character_id, potion_id) VALUES (?, ?)', [id, potionId]);
+        }
+
+        
+        await connection.query('DELETE FROM character_weapons WHERE character_id = ?', [id]);
+        for (const weaponId of weapons) {
+            await connection.query('INSERT INTO character_weapons (character_id, weapon_id) VALUES (?, ?)', [id, weaponId]);
+        }
+
+        await connection.commit();
+    } catch (error) {
+        await connection.rollback();
+        throw new Error('Something went wrong');
+    } finally {
+        connection.release();
+    }
+}
+  
+
+static async deleteCharacter(id) {
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        await connection.query('DELETE FROM character_gears WHERE character_id = ?', [id]);
         await connection.query('DELETE FROM character_potions WHERE character_id = ?', [id]);
         await connection.query('DELETE FROM character_weapons WHERE character_id = ?', [id]);
 
-        // Delete from characters table
+        // Eliminar personaje
         const [result] = await connection.query('DELETE FROM characters WHERE id = ?', [id]);
+        
+        if (result.affectedRows === 0) {
+            throw new Error('Character not found');
+        }
 
         await connection.commit();
-
-        if (result.affectedRows > 0) {
-            console.log('Character deleted successfully');
-            return true;
-        }
-        return false; // Return false if no rows were affected (character not found)
+        return true;
     } catch (error) {
         await connection.rollback();
         console.error('Error deleting character:', error);
@@ -170,12 +146,12 @@ class CharacterService {
     } finally {
         connection.release();
     }
-  }
+}
 
 
   static async getAllCharacters() {
     try {
-        const [characterRows] = await pool.query('SELECT * FROM characters');
+        const [characterRows] = await pool.query('SELECT id, name, race, class_id, hp, maxHp, ac FROM characters');
 
         const [gearRows] = await pool.query(`
             SELECT cg.character_id, g.*
@@ -233,11 +209,12 @@ class CharacterService {
     static async addWeapon(characterId, weaponId) {
         try {
             const character = await CharacterService.searchCharacterById(characterId);
-            const weapon = await WeaponService.searchWeaponById(weaponId);
-    
+            
             if (!character) {
                 throw new Error('Character not found');
             }
+
+            const weapon = await WeaponService.searchWeaponById(weaponId);
     
             if (!weapon) {
                 throw new Error('Weapon not found');
@@ -266,11 +243,12 @@ class CharacterService {
     static async addGear(characterId, gearId) {
         try {
             const character = await CharacterService.searchCharacterById(characterId);
-            const gear = await GearService.searchGearById(gearId);
     
             if (!character) {
                 throw new Error('Character not found');
             }
+
+            const gear = await GearService.searchGearById(gearId);
     
             if (!gear) {
                 throw new Error('Gear not found');
@@ -326,11 +304,12 @@ class CharacterService {
     static async addPotion(characterId, potionId) {
         try {
             const character = await CharacterService.searchCharacterById(characterId);
-            const potion = await PotionService.searchPotionById(potionId);
     
             if (!character) {
                 throw new Error('Character not found');
             }
+
+            const potion = await PotionService.searchPotionById(potionId);
     
             if (!potion) {
                 throw new Error('Potion not found');
@@ -366,12 +345,15 @@ class CharacterService {
         try {
             const attacker = await CharacterService.searchCharacterById(attackerId);
             const target = await CharacterService.searchCharacterById(targetId);
-            const attackerClass = await ClassService.searchClassById(attacker.classId)
             
 
             if (!attacker || !target) {
                 throw new Error('Character not Found');
             }
+
+            if (!target) {
+                throw new Error('Target not found');
+              }
 
             const weapon = attacker.weapons.find(w => w.id === weaponId);
 
@@ -379,6 +361,7 @@ class CharacterService {
                 throw new Error('Weapon not found or does not belong to the attacker');
             }
 
+            const attackerClass = await ClassService.searchClassById(attacker.classId)
             
             let initialDamage = weapon.damage;
             let damageDealt = initialDamage;
@@ -408,13 +391,15 @@ class CharacterService {
 
             const isDead = target.hp === 0;
 
+
             await pool.query('UPDATE characters SET hp = ? WHERE id = ?', [target.hp, target.id]);
 
-            const damageMessage = bonus > 0 ? `${attacker.name} attacked ${target.name} with ${weapon.name}, dealing ${initialDamage} damage and ${bonus} bonus for a total of ${damageDealt}` : `${attacker.name} attacked ${target.name} with ${weapon.name}, dealing ${damageDealt}`;
+            let damageMessage = bonus > 0 ? `${attacker.name} attacked ${target.name} with ${weapon.name}, dealing ${initialDamage} damage and ${bonus} bonus for a total of ${damageDealt}` : `${attacker.name} attacked ${target.name} with ${weapon.name}, dealing ${damageDealt}`;
 
             if (isDead) {
                 damageMessage += `. ${target.name} has been defeated.`;
             }
+
 
             return {
                 message: damageMessage

@@ -46,7 +46,7 @@ describe('SpellService', () => {
 
     const spells = await SpellService.getAllSpells();
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells');
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, manaCost, damage, duration FROM spells');
     expect(spells).toHaveLength(2);
     expect(spells[0].name).toBe('Fireball');
     expect(spells[1].name).toBe('Ice Blast');
@@ -58,7 +58,7 @@ describe('SpellService', () => {
 
     const spellInstance = await SpellService.searchSpellById('1');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, manaCost, damage, duration FROM spells WHERE id = ?', ['1']);
     expect(spellInstance).toEqual(mockSpell);
   });
 
@@ -67,7 +67,7 @@ describe('SpellService', () => {
 
     const spellInstance = await SpellService.searchSpellById('999');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM spells WHERE id = ?', ['999']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, manaCost, damage, duration FROM spells WHERE id = ?', ['999']);
     expect(spellInstance).toBeNull();
   });
 

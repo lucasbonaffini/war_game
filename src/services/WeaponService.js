@@ -20,7 +20,7 @@ class WeaponService {
     }
     static async searchWeaponById(id) {
         try {
-            const [rows] = await pool.query('SELECT * FROM weapons WHERE id = ?', [id]);
+            const [rows] = await pool.query('SELECT id, name, category, damage FROM weapons WHERE id = ?', [id]);
             if(rows.length > 0) {
                 const weapon = rows[0];
                 return new Weapon(
@@ -67,7 +67,7 @@ class WeaponService {
       }
       static async getAllWeapons() {
         try {
-          const [rows] = await pool.query('SELECT * FROM weapons');
+          const [rows] = await pool.query('SELECT id, name, category, damage FROM weapons');
           const weapons = rows.map(weapon => new Weapon(
             weapon.id,
             weapon.name,

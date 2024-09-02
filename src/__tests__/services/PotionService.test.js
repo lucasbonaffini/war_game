@@ -44,7 +44,7 @@ describe('PotionService', () => {
 
     const potions = await PotionService.getAllPotions();
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM potions');
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, effects, utility FROM potions');
     expect(potions).toHaveLength(2);
     expect(potions[0].name).toBe('Healing Potion');
     expect(potions[1].name).toBe('Mana Potion');
@@ -56,7 +56,7 @@ describe('PotionService', () => {
 
     const potionInstance = await PotionService.searchPotionById('1');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM potions WHERE id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, effects, utility FROM potions WHERE id = ?', ['1']);
     expect(potionInstance).toEqual(mockPotion);
   });
 
@@ -65,7 +65,7 @@ describe('PotionService', () => {
 
     const potionInstance = await PotionService.searchPotionById('999');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM potions WHERE id = ?', ['999']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, effects, utility FROM potions WHERE id = ?', ['999']);
     expect(potionInstance).toBeNull();
   });
 

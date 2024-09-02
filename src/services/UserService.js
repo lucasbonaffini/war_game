@@ -12,7 +12,7 @@ class UserService {
   }
 
   static async getUserById(id) {
-    const query = 'SELECT * FROM users WHERE id = ?';
+    const query = 'SELECT id, username, password, role FROM users WHERE id = ?';
     const [rows] = await pool.query(query, [id]);
     if (rows.length === 0) return null;
     const { username, password, role } = rows[0];
@@ -20,7 +20,7 @@ class UserService {
   }
 
   static async getUserByUsername(username) {
-    const query = 'SELECT * FROM users WHERE username = ?';
+    const query = 'SELECT id, username, password, role FROM users WHERE username = ?';
     const [rows] = await pool.query(query, [username]);
     if (rows.length === 0) return null;
     const { id, password, role } = rows[0];

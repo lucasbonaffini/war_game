@@ -44,7 +44,7 @@ describe('GearService', () => {
 
     const gears = await GearService.getAllGears();
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM gears');
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, category, armour FROM gears');
     expect(gears).toHaveLength(2);
     expect(gears[0].name).toBe('Plate Armor');
     expect(gears[1].name).toBe('Leather Armor');
@@ -56,7 +56,7 @@ describe('GearService', () => {
 
     const gearInstance = await GearService.searchGearById('1');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM gears WHERE id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, category, armour FROM gears WHERE id = ?', ['1']);
     expect(gearInstance).toEqual(mockGear);
   });
 
@@ -65,7 +65,7 @@ describe('GearService', () => {
 
     const gearInstance = await GearService.searchGearById('999');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM gears WHERE id = ?', ['999']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, category, armour FROM gears WHERE id = ?', ['999']);
     expect(gearInstance).toBeNull();
   });
 
@@ -113,5 +113,5 @@ describe('GearService', () => {
     expect(pool.query).toHaveBeenCalledWith('DELETE FROM gears WHERE id = ?', ['999']);
     expect(result).toBe(false);
   });
-  
+
 });

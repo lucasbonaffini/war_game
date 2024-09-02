@@ -42,7 +42,7 @@ describe('UserService', () => {
 
             const user = await UserService.getUserById('1');
 
-            expect(pool.query).toHaveBeenCalledWith('SELECT * FROM users WHERE id = ?', ['1']);
+            expect(pool.query).toHaveBeenCalledWith('SELECT id, username, password, role FROM users WHERE id = ?', ['1']);
             expect(user).toEqual(expect.any(User));
             expect(user.id).toBe('1');
             expect(user.username).toBe('testUser');
@@ -55,7 +55,7 @@ describe('UserService', () => {
 
             const user = await UserService.getUserById('999');
 
-            expect(pool.query).toHaveBeenCalledWith('SELECT * FROM users WHERE id = ?', ['999']);
+            expect(pool.query).toHaveBeenCalledWith('SELECT id, username, password, role FROM users WHERE id = ?', ['999']);
             expect(user).toBeNull();
         });
 
@@ -73,7 +73,7 @@ describe('UserService', () => {
 
             const user = await UserService.getUserByUsername('testUser');
 
-            expect(pool.query).toHaveBeenCalledWith('SELECT * FROM users WHERE username = ?', ['testUser']);
+            expect(pool.query).toHaveBeenCalledWith('SELECT id, username, password, role FROM users WHERE username = ?', ['testUser']);
             expect(user).toEqual(expect.any(User));
             expect(user.id).toBe('1');
             expect(user.username).toBe('testUser');
@@ -86,7 +86,7 @@ describe('UserService', () => {
 
             const user = await UserService.getUserByUsername('unknownUser');
 
-            expect(pool.query).toHaveBeenCalledWith('SELECT * FROM users WHERE username = ?', ['unknownUser']);
+            expect(pool.query).toHaveBeenCalledWith('SELECT id, username, password, role FROM users WHERE username = ?', ['unknownUser']);
             expect(user).toBeNull();
         });
 

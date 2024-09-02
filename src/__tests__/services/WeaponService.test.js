@@ -44,7 +44,7 @@ describe('WeaponService', () => {
 
     const weapons = await WeaponService.getAllWeapons();
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM weapons');
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, category, damage FROM weapons');
     expect(weapons).toHaveLength(2);
     expect(weapons[0].name).toBe('Sword');
     expect(weapons[1].name).toBe('Bow');
@@ -56,7 +56,7 @@ describe('WeaponService', () => {
 
     const weaponInstance = await WeaponService.searchWeaponById('1');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM weapons WHERE id = ?', ['1']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, category, damage FROM weapons WHERE id = ?', ['1']);
     expect(weaponInstance).toEqual(mockWeapon);
   });
 
@@ -65,7 +65,7 @@ describe('WeaponService', () => {
 
     const weaponInstance = await WeaponService.searchWeaponById('999');
 
-    expect(pool.query).toHaveBeenCalledWith('SELECT * FROM weapons WHERE id = ?', ['999']);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, category, damage FROM weapons WHERE id = ?', ['999']);
     expect(weaponInstance).toBeNull();
   });
 

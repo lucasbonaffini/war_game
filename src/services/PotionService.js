@@ -20,7 +20,7 @@ class PotionService {
     }
     static async searchPotionById(id) {
         try {
-            const [rows] = await pool.query('SELECT * FROM potions WHERE id = ?', [id]);
+            const [rows] = await pool.query('SELECT id, name, effects, utility FROM potions WHERE id = ?', [id]);
             if(rows.length > 0) {
                 const potion = rows[0];
                 return new Potion(
@@ -67,7 +67,7 @@ class PotionService {
       }
       static async getAllPotions() {
         try {
-          const [rows] = await pool.query('SELECT * FROM potions');
+          const [rows] = await pool.query('SELECT id, name, effects, utility FROM potions');
           const potions = rows.map(potion => new Potion(
             potion.id,
             potion.name,
