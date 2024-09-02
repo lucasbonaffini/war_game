@@ -1,7 +1,7 @@
 - Project Description
 
 War game API
-This API allows you to manage characters, classes, potions, gears and weapons in a game. Below you'll find the details on how to use the API, including the necessary steps to create a class, character, and specific instances.
+This API allows you to manage characters, classes, wizards, potions, gears, weapons and spells in a game. Below you'll find the details on how to use the API, including the necessary steps to create a class, character, and specific instances such as a wizard.
 
 Getting Started
 Prerequisites
@@ -37,8 +37,11 @@ API Endpoints
 *Actions*
 
 Attack
+castSpell
 Heal (Using Potion to restore HP)
+Restore Mana (Using Potion to restore Mana)
 addPotion
+addSpell
 addGear
 addWeapon
 
@@ -48,6 +51,9 @@ Creating Classes and Characters:
 
 Before creating a character, ensure you have created a class. You need to assign a class to a character during creation.
 
+Creating a Wizard:
+
+To create a wizard, you must first create a class with the name "Wizard". This allows you to create a wizard character and manage wizard-specific attributes such as mana.
 
 Creating Potions:
 
@@ -82,9 +88,10 @@ if you create a `rouge` or `barbarian` class, when you call the attack method, y
 - BD Schema
 
 The database for this project is relational. It is composed of a main class `Character`, from which Wizard extends, which handles its own extra attributes such as mana, maxMana.
-Then we can observe that the rest of classes represent components that a character can have. Such as `Gear`, `Weapon`, `Class` (to define if it is a rogue, a barbarian), and `Potion`
+Then we can observe that the rest of classes represent components that a character can have. Such as `Gear`, `Weapon`, `Class` (to define if it is a mage, a rogue, a barbarian), `Potion`, and `Spell`.
 
 Gear presents a pivot table character_gears since it is an n to n relationship. As for weapon and potion (character_weapons and character_potions)
+On the other hand, the Spell class has the same n to n relationship, but in this case with the Wizard class, since they are the ones who can make use of their magic to be able to cast them
 
 Here is the path to the db schema img
 
@@ -122,7 +129,16 @@ Here is the path to the db schema img
 | effects    | JSON       | Effects of the potion in JSON format|
 | utility    | VARCHAR(255)| Utility of the potion              |
 
+## Spells Table
 
+| Column     | Data Type  | Description                        |
+|------------|------------|------------------------------------|
+| id         | CHAR(36)   | Primary key                        |
+| name       | VARCHAR(255)| Name of the spell                  |
+| description| VARCHAR(255)| Description of the spell           |
+| manaCost   | INT        | Mana cost of the spell (default 0) |
+| damage     | INT        | Damage caused by the spell (default 0) |
+| duration   | INT        | Duration of the spell in seconds (default 0) |
 
 ## Gears Table
 
@@ -142,6 +158,13 @@ Here is the path to the db schema img
 | category   | VARCHAR(255)| Category of the weapon             |
 | damage     | INT        | Damage value of the weapon         |
 
+## Wizards Table
+
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Primary key, foreign key referencing `characters.id` |
+| mana          | INT        | Mana points (default 1000)         |
+| maxMana       | INT        | Maximum mana points (default 1000) |
 
 ## Character_Potions Table
 
@@ -167,12 +190,18 @@ Here is the path to the db schema img
 | gear_id       | CHAR(36)   | Foreign key referencing `gears.id`|
 | PRIMARY KEY   | (character_id, gear_id) | Composite primary key |
 
+## Wizard_Spells Table
 
+| Column        | Data Type  | Description                        |
+|---------------|------------|------------------------------------|
+| character_id  | CHAR(36)   | Foreign key referencing `characters.id` |
+| spell_id      | CHAR(36)   | Foreign key referencing `spells.id`|
+| PRIMARY KEY   | (character_id, spell_id) | Composite primary key |
 
 
 Here is the link for the coverage test in Coveralls
 
-https://coveralls.io/github/lucasbonaffini/war_game
+https://coveralls.io/github/lucasbonaffini/war_game 
 
 
 

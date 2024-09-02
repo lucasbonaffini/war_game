@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">11.11% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>1/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -88,9 +88,7 @@
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
 <a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L26'></a><a href='#L26'>26</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -108,15 +106,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
-const Character = require('./Character');
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const Character = require('./Character');
 &nbsp;
 class Wizard extends Character {
     /**
@@ -133,11 +130,11 @@ class Wizard extends Character {
      * @param {number} [mana=1000] - The mana points of the character.
      * @param {Array} [spells=[]] - The spells known by the character.
      */
-<span class="fstat-no" title="function not covered" >    co</span>nstructor(id, name, race, classId, gear = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> potions = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> weapons = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> hp = <span class="branch-0 cbranch-no" title="branch not covered" >2000,</span> maxHp = <span class="branch-0 cbranch-no" title="branch not covered" >2000,</span> ac = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> mana = <span class="branch-0 cbranch-no" title="branch not covered" >1000,</span> maxMana = <span class="branch-0 cbranch-no" title="branch not covered" >1000,</span> spells = <span class="branch-0 cbranch-no" title="branch not covered" >[])</span> {
-<span class="cstat-no" title="statement not covered" >        super(id, name, race, classId, gear, potions, weapons, hp, maxHp, ac);</span>
-<span class="cstat-no" title="statement not covered" >        this.mana = mana;</span>
-<span class="cstat-no" title="statement not covered" >        this.maxMana = maxMana;</span>
-<span class="cstat-no" title="statement not covered" >        this.spells = spells;</span>
+    constructor(id, name, race, classId, gear = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> potions = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> weapons = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> hp = <span class="branch-0 cbranch-no" title="branch not covered" >2000,</span> maxHp = <span class="branch-0 cbranch-no" title="branch not covered" >2000,</span> ac = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> mana = <span class="branch-0 cbranch-no" title="branch not covered" >1000,</span> maxMana = <span class="branch-0 cbranch-no" title="branch not covered" >1000,</span> spells = []) {
+        super(id, name, race, classId, gear, potions, weapons, hp, maxHp, ac);
+        this.mana = mana;
+        this.maxMana = maxMana;
+        this.spells = spells;
     }
 }
 &nbsp;
@@ -148,7 +145,7 @@ module.exports = Wizard;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-09-02T01:04:27.731Z
+                at 2024-09-02T05:39:32.575Z
             </div>
         <script src="../prettify.js"></script>
         <script>

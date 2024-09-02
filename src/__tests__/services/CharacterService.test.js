@@ -611,6 +611,79 @@ describe('CharacterService', () => {
     
 });
 
+describe('heal', () => {
+  test('should heal the character successfully', async () => {
+    const mockCharacter = {
+      id: 'character-1',
+      name: 'Gandalf',
+      hp: 100,
+      maxHp: 150,
+      potions: [{ id: 'potion-1', effects: { hpRestore: 30 } }]
+    };
+    
+    // Mocks
+    CharacterService.searchCharacterById = jest.fn().mockResolvedValue(mockCharacter);
+    pool.query.mockResolvedValueOnce({ affectedRows: 1 }); // for updating HP
+    pool.query.mockResolvedValueOnce({ affectedRows: 1 }); // for removing potion
+
+    const result = await CharacterService.heal('character-1');
+
+    expect(result.message).toContain('has been healed by 30 HP');
+    expect(result.character.hp).toBe(130);
+    expect(pool.query).toHaveBeenCalledWith('UPDATE characters SET hp = ? WHERE id = ?', [130, 'character-1']);
+    expect(pool.query).toHaveBeenCalledWith('DELETE FROM character_potions WHERE character_id = ? AND potion_id = ?', ['character-1', 'potion-1']);
+  });
+
+  test('should throw an error if character is not found', async () => {
+    CharacterService.searchCharacterById = jest.fn().mockResolvedValue(null);
+
+    await expect(CharacterService.heal('invalid-id')).rejects.toThrow('Character not found');
+  });
+
+  test('should throw an error if no healing potion is available', async () => {
+    const mockCharacter = {
+      id: 'character-2',
+      name: 'Aragorn',
+      hp: 100,
+      maxHp: 150,
+      potions: [] // No healing potion
+    };
+
+    CharacterService.searchCharacterById = jest.fn().mockResolvedValue(mockCharacter);
+
+    await expect(CharacterService.heal('character-2')).rejects.toThrow("Potion does not exist in character's inventory");
+  });
+
+  test('should throw an error if HP is already full', async () => {
+    const mockCharacter = {
+      id: 'character-3',
+      name: 'Legolas',
+      hp: 150,
+      maxHp: 150,
+      potions: [{ id: 'potion-2', effects: { hpRestore: 30 } }]
+    };
+
+    CharacterService.searchCharacterById = jest.fn().mockResolvedValue(mockCharacter);
+
+    await expect(CharacterService.heal('character-3')).rejects.toThrow('Your HP is full! Keep fighting, warrior!');
+  });
+
+  test('should handle database errors during update', async () => {
+    const mockCharacter = {
+      id: 'character-4',
+      name: 'Gimli',
+      hp: 50,
+      maxHp: 100,
+      potions: [{ id: 'potion-3', effects: { hpRestore: 20 } }]
+    };
+
+    CharacterService.searchCharacterById = jest.fn().mockResolvedValue(mockCharacter);
+    pool.query.mockRejectedValueOnce(new Error('Database error')); // For updating HP
+
+    await expect(CharacterService.heal('character-4')).rejects.toThrow('Database error');
+  });
+});
+
 
 
 
