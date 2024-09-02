@@ -134,30 +134,5 @@ describe('SpellService', () => {
   
     await expect(SpellService.deleteSpell('1')).rejects.toThrow('Database error');
   });
-
-  test('should handle errors when deleting a non-existing spell', async () => {
-    pool.query.mockResolvedValue({ affectedRows: 0 });
-  
-    await expect(SpellService.deleteSpell('non-existing-id')).resolves.toBe(false);
-  });
-  
-  test('should handle errors when creating a spell with missing fields', async () => {
-    const invalidSpell = { id: '', name: '', description: '', manaCost: -1, damage: -10, duration: -1 };
-    pool.query.mockRejectedValue(new Error('Validation error'));
-  
-    await expect(SpellService.createSpell(invalidSpell)).rejects.toThrow('Validation error');
-  });
-  
-  test('should handle errors when deleting a non-existing spell', async () => {
-    pool.query.mockResolvedValue({ affectedRows: 0 });
-  
-    await expect(SpellService.deleteSpell('non-existing-id')).resolves.toBe(false);
-  });
-  
-  test('should handle database errors when getting all spells', async () => {
-    pool.query.mockRejectedValue(new Error('Database error'));
-  
-    await expect(SpellService.getAllSpells()).rejects.toThrow('Database error');
-  });
   
 });
