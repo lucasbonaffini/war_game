@@ -85,7 +85,6 @@ The database for this project is relational. It is composed of a main class `Cha
 Then we can observe that the rest of classes represent components that a character can have. Such as `Gear`, `Weapon`, `Class` (to define if it is a rogue, a barbarian), and `Potion`
 
 Gear presents a pivot table character_gears since it is an n to n relationship. As for weapon and potion (character_weapons and character_potions)
-On the other hand, the Spell class has the same n to n relationship, but in this case with the Wizard class, since they are the ones who can make use of their magic to be able to cast them
 
 Here is the path to the db schema img
 
