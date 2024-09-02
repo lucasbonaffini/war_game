@@ -50,6 +50,15 @@ describe('ClassService', () => {
     expect(classes[1].name).toBe('Warrior');
   });
 
+  test('should handle empty result set', async () => {
+    pool.query.mockResolvedValue([[]]);
+
+    const classes = await ClassService.getAllClasses();
+
+    expect(classes).toHaveLength(0);
+    expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, attributes FROM classes');
+  });
+
   test('should return a class by id', async () => {
     const mockClass = { id: '1', name: 'Wizard', description: 'A powerful wizard', attributes: '{}' };
     pool.query.mockResolvedValue([[mockClass]]);
@@ -59,6 +68,7 @@ describe('ClassService', () => {
     expect(pool.query).toHaveBeenCalledWith('SELECT id, name, description, attributes FROM classes WHERE id = ?', ['1']);
     expect(classInstance).toEqual(mockClass);
   });
+
 
   test('should return null if class not found by id', async () => {
     pool.query.mockResolvedValue([[]]);

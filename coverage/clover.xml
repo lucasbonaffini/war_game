@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1725255572643" clover="3.2.0">
-  <project timestamp="1725255572643" name="All files">
-    <metrics statements="925" coveredstatements="771" conditionals="228" coveredconditionals="163" methods="125" coveredmethods="114" elements="1278" coveredelements="1048" complexity="0" loc="925" ncloc="925" packages="3" files="24" classes="24"/>
+<coverage generated="1725256208578" clover="3.2.0">
+  <project timestamp="1725256208579" name="All files">
+    <metrics statements="925" coveredstatements="763" conditionals="228" coveredconditionals="163" methods="125" coveredmethods="114" elements="1278" coveredelements="1040" complexity="0" loc="925" ncloc="925" packages="3" files="24" classes="24"/>
     <package name="models">
       <metrics statements="61" coveredstatements="41" conditionals="36" coveredconditionals="2" methods="9" coveredmethods="4"/>
       <file name="Character.js" path="/Users/lucasbonaffini/Dev/war_game/src/models/Character.js">
@@ -433,7 +433,7 @@
       </file>
     </package>
     <package name="services">
-      <metrics statements="549" coveredstatements="462" conditionals="146" coveredconditionals="115" methods="70" coveredmethods="64"/>
+      <metrics statements="549" coveredstatements="454" conditionals="146" coveredconditionals="115" methods="70" coveredmethods="64"/>
       <file name="CharacterService.js" path="/Users/lucasbonaffini/Dev/war_game/src/services/CharacterService.js">
         <metrics statements="184" coveredstatements="172" conditionals="56" coveredconditionals="45" methods="20" coveredmethods="20"/>
         <line num="1" count="4" type="stmt"/>
@@ -655,10 +655,10 @@
         <line num="62" count="1" type="stmt"/>
         <line num="64" count="0" type="stmt"/>
         <line num="65" count="0" type="stmt"/>
-        <line num="70" count="1" type="stmt"/>
-        <line num="71" count="1" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="71" count="2" type="stmt"/>
         <line num="72" count="2" type="stmt"/>
-        <line num="78" count="1" type="stmt"/>
+        <line num="78" count="2" type="stmt"/>
         <line num="80" count="0" type="stmt"/>
         <line num="81" count="0" type="stmt"/>
         <line num="86" count="6" type="stmt"/>
@@ -750,16 +750,16 @@
         <line num="85" count="6" type="stmt"/>
       </file>
       <file name="SpellService.js" path="/Users/lucasbonaffini/Dev/war_game/src/services/SpellService.js">
-        <metrics statements="40" coveredstatements="38" conditionals="8" coveredconditionals="6" methods="6" coveredmethods="6"/>
+        <metrics statements="40" coveredstatements="30" conditionals="8" coveredconditionals="6" methods="6" coveredmethods="6"/>
         <line num="1" count="4" type="stmt"/>
         <line num="2" count="4" type="stmt"/>
-        <line num="6" count="3" type="stmt"/>
-        <line num="8" count="3" type="stmt"/>
-        <line num="10" count="3" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
-        <line num="17" count="2" type="stmt"/>
-        <line num="18" count="2" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
         <line num="22" count="2" type="stmt"/>
         <line num="23" count="2" type="stmt"/>
         <line num="24" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -768,28 +768,28 @@
         <line num="35" count="1" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
-        <line num="42" count="3" type="stmt"/>
-        <line num="43" count="3" type="stmt"/>
+        <line num="42" count="2" type="stmt"/>
+        <line num="43" count="2" type="stmt"/>
         <line num="47" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="48" count="1" type="stmt"/>
         <line num="49" count="1" type="stmt"/>
         <line num="51" count="1" type="stmt"/>
-        <line num="53" count="1" type="stmt"/>
-        <line num="54" count="1" type="stmt"/>
-        <line num="58" count="5" type="stmt"/>
-        <line num="59" count="5" type="stmt"/>
-        <line num="60" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="60" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="61" count="1" type="stmt"/>
         <line num="62" count="1" type="stmt"/>
-        <line num="64" count="3" type="stmt"/>
-        <line num="66" count="1" type="stmt"/>
-        <line num="67" count="1" type="stmt"/>
-        <line num="71" count="2" type="stmt"/>
-        <line num="72" count="2" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
         <line num="73" count="2" type="stmt"/>
         <line num="81" count="1" type="stmt"/>
-        <line num="83" count="1" type="stmt"/>
-        <line num="84" count="1" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="84" count="0" type="stmt"/>
         <line num="89" count="4" type="stmt"/>
       </file>
       <file name="UserService.js" path="/Users/lucasbonaffini/Dev/war_game/src/services/UserService.js">
