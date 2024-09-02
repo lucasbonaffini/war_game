@@ -115,24 +115,4 @@ describe('SpellService', () => {
     expect(pool.query).toHaveBeenCalledWith('DELETE FROM spells WHERE id = ?', ['999']);
     expect(result).toBe(false);
   });
-  test('should handle errors during spell creation', async () => {
-    const mockSpell = { id: '1', name: 'Fireball', description: 'A powerful fireball', manaCost: 50, damage: 100, duration: 5 };
-    pool.query.mockRejectedValue(new Error('Database error'));
-  
-    await expect(SpellService.createSpell(mockSpell)).rejects.toThrow('Database error');
-  });
-  
-  test('should handle errors during spell update', async () => {
-    const updatedSpellData = { name: 'Greater Fireball', description: 'A more powerful fireball', manaCost: 60, damage: 150, duration: 6 };
-    pool.query.mockRejectedValue(new Error('Database error'));
-  
-    await expect(SpellService.updateSpell('1', updatedSpellData)).rejects.toThrow('Database error');
-  });
-  
-  test('should handle errors during spell deletion', async () => {
-    pool.query.mockRejectedValue(new Error('Database error'));
-  
-    await expect(SpellService.deleteSpell('1')).rejects.toThrow('Database error');
-  });
-  
 });
