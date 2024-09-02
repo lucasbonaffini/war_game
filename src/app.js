@@ -25,10 +25,9 @@ setupDatabase()
     app.use('/characters', characterRoutes);
     app.use('/potions', potionRoutes);
     app.use('/classes', classRoutes);
-    app.use('/wizards', wizardRoutes);
     app.use('/gears', gearRoutes);
     app.use('/weapons', weaponRoutes);
-    app.use('/spells', spellRoutes);
+    
 
     // Swagger configuration
     configureSwagger(app);
