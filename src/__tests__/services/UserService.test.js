@@ -4,7 +4,7 @@ const User = require('../../models/User');
 const bcrypt = require('bcrypt');
 
 jest.mock('../../config/db');
-jest.mock('bcrypt');
+jest.mock('bcryptjs');
 
 describe('UserService', () => {
     afterEach(() => {
