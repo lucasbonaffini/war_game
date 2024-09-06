@@ -1,7 +1,7 @@
 const pool = require('../../config/db');
 const UserService = require('../../services/UserService');
 const User = require('../../models/User');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 jest.mock('../../config/db');
 jest.mock('bcryptjs');
@@ -31,7 +31,7 @@ describe('UserService', () => {
             bcrypt.hash.mockResolvedValue('hashedPassword');
             pool.query.mockRejectedValue(new Error('Database Error'));
 
-            await expect(UserService.createUser('testUser', 'password', 'user')).rejects.toThrow('Database Error');
+            await expect(UserService.createUser('testUser', 'password', 'user')).rejects.toThrow('Failed to create user');
         });
     });
 
@@ -62,7 +62,7 @@ describe('UserService', () => {
         test('should handle database errors', async () => {
             pool.query.mockRejectedValue(new Error('Database Error'));
 
-            await expect(UserService.getUserById('1')).rejects.toThrow('Database Error');
+            await expect(UserService.getUserById('1')).rejects.toThrow('Failed to fetch user');
         });
     });
 
@@ -93,7 +93,7 @@ describe('UserService', () => {
         test('should handle database errors', async () => {
             pool.query.mockRejectedValue(new Error('Database Error'));
 
-            await expect(UserService.getUserByUsername('testUser')).rejects.toThrow('Database Error');
+            await expect(UserService.getUserByUsername('testUser')).rejects.toThrow('Failed to fetch user');
         });
     });
 });
