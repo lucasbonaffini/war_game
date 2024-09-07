@@ -7,6 +7,11 @@ jest.mock('../../config/db');
 jest.mock('bcryptjs');
 
 describe('UserService', () => {
+
+    beforeEach(() => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+      });
+
     afterEach(() => {
         jest.clearAllMocks();
     });
