@@ -23,16 +23,14 @@ setupDatabase()
   .then(() => {
     // Routes
     app.use('/auth', authRoutes);
-    
-    app.use(authMiddleware);
 
-    app.use('/characters', characterRoutes);
-    app.use('/potions', potionRoutes);
-    app.use('/classes', classRoutes);
-    app.use('/wizards', wizardRoutes);
-    app.use('/gears', gearRoutes);
-    app.use('/weapons', weaponRoutes);
-    app.use('/spells', spellRoutes);
+    app.use('/characters', authMiddleware, characterRoutes);
+    app.use('/potions', authMiddleware, potionRoutes);
+    app.use('/classes', authMiddleware, classRoutes);
+    app.use('/wizards', authMiddleware, wizardRoutes);
+    app.use('/gears', authMiddleware, gearRoutes);
+    app.use('/weapons', authMiddleware, weaponRoutes);
+    app.use('/spells', authMiddleware, spellRoutes);
 
     // Swagger configuration
     configureSwagger(app);
