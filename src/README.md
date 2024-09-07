@@ -16,6 +16,8 @@ swagger-jsdoc
 swagger-ui-express
 uuid
 docker
+bcryptjs
+crypto
 
 Installation
 
