@@ -49,7 +49,7 @@ class CharacterService {
             // Fetch and add gear
             const [gearRows] = await pool.query(`
                 SELECT g.* FROM gears g
-                INNER JOIN character_gears cg ON g.id = cg.gear_id
+                INNER JOIN character_gear cg ON g.id = cg.gear_id
                 WHERE cg.character_id = ?`, [id]);
     
             return {
@@ -93,9 +93,9 @@ class CharacterService {
         }
 
         
-        await connection.query('DELETE FROM character_gears WHERE character_id = ?', [id]);
+        await connection.query('DELETE FROM character_gear WHERE character_id = ?', [id]);
         for (const gearId of gear) {
-            await connection.query('INSERT INTO character_gears (character_id, gear_id) VALUES (?, ?)', [id, gearId]);
+            await connection.query('INSERT INTO character_gear (character_id, gear_id) VALUES (?, ?)', [id, gearId]);
         }
 
         
@@ -126,7 +126,7 @@ static async deleteCharacter(id) {
     try {
         await connection.beginTransaction();
 
-        await connection.query('DELETE FROM character_gears WHERE character_id = ?', [id]);
+        await connection.query('DELETE FROM character_gear WHERE character_id = ?', [id]);
         await connection.query('DELETE FROM character_potions WHERE character_id = ?', [id]);
         await connection.query('DELETE FROM character_weapons WHERE character_id = ?', [id]);
 
