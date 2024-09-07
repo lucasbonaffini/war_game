@@ -2,7 +2,6 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const path = require('path');
 
-
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -16,8 +15,22 @@ const options = {
                 url: 'http://localhost:3000', // Replace with your server URL
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'Enter JWT token in the format: Bearer <token>',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [], // Applies 'bearerAuth' globally to all endpoints
+            },
+        ],
     },
-    
     apis: [
         './routes/*.js',
         path.resolve(__dirname, './swagger.yaml'),
@@ -29,4 +42,5 @@ const swaggerSpec = swaggerJSDoc(options);
 module.exports = (app) => {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 };
+
 
