@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const authMiddleware = require('./security/authMiddleware')
 const authRoutes = require('./routes/AuthRouter');
 const characterRoutes = require('./routes/CharacterRouter');
 const potionRoutes = require('./routes/PotionRouter');
@@ -22,6 +23,9 @@ setupDatabase()
   .then(() => {
     // Routes
     app.use('/auth', authRoutes);
+    
+    app.use(authMiddleware);
+
     app.use('/characters', characterRoutes);
     app.use('/potions', potionRoutes);
     app.use('/classes', classRoutes);
