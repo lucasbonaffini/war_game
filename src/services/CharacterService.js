@@ -361,7 +361,7 @@ static async deleteCharacter(id) {
                 throw new Error('Weapon not found or does not belong to the attacker');
             }
 
-            const attackerClass = await ClassService.searchClassById(attacker.classId)
+            const attackerClass = await ClassService.searchClassById(attacker.class_id)
             
             let initialDamage = weapon.damage;
             let damageDealt = initialDamage;

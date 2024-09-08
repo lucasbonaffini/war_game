@@ -275,24 +275,15 @@ paths:
         '404':
           description: Wizard or spell not found
 
-  '/characters/{id}/heal':
+  '/characters/heal/{characterId}':
     post:
       summary: Heal a character
       parameters:
         - in: path
-          name: id
+          name: characterId
           required: true
           schema:
             type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                healAmount:
-                  type: integer
       responses:
         '200':
           description: Character healed successfully
