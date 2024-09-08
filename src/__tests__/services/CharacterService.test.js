@@ -547,7 +547,7 @@ describe('CharacterService', () => {
 
   describe('attack', () => {
     it('should successfully perform an attack and update target HP accordingly', async () => {
-      const attacker = { ...mockCharacter, weapons: [mockWeapon], classId: mockClass.id, name: 'Attacker' };
+      const attacker = { ...mockCharacter, weapons: [mockWeapon], class_id: mockClass.id, name: 'Attacker' };
       const target = { ...mockCharacter, hp: 1500, ac: 200, name: 'Target', id: 'target-1' };
 
       jest.spyOn(CharacterService, 'searchCharacterById')
@@ -560,7 +560,7 @@ describe('CharacterService', () => {
 
       expect(CharacterService.searchCharacterById).toHaveBeenCalledWith(attacker.id);
       expect(CharacterService.searchCharacterById).toHaveBeenCalledWith(target.id);
-      expect(ClassService.searchClassById).toHaveBeenCalledWith(attacker.classId);
+      expect(ClassService.searchClassById).toHaveBeenCalledWith(attacker.class_id);
       expect(pool.query).toHaveBeenCalledWith('UPDATE characters SET hp = ? WHERE id = ?', [1150, target.id]);
       expect(result.message).toBe(
         'Attacker attacked Target with Anduril, dealing 300 damage and 50 bonus for a total of 350'
