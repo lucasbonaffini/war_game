@@ -18,21 +18,59 @@ jest.mock('../../config/db', () => ({
 }));
 
 describe('ClassService', () => {
+  
+  beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+  
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('should create a new class', async () => {
+  test('should create a new class if name is unique', async () => {
     const mockClass = { id: '1', name: 'Wizard', description: 'A powerful wizard', attributes: {} };
-    pool.query.mockResolvedValue([{ insertId: 1 }]);
-    
+
+   
+    pool.query.mockResolvedValueOnce([[]]);
+    pool.query.mockResolvedValueOnce([{ insertId: 1 }]); 
+
     const classInstance = await ClassService.createClass(mockClass);
 
+    
+    expect(pool.query).toHaveBeenCalledWith(
+      'SELECT id FROM classes WHERE name = ?',
+      [mockClass.name]
+    );
+
+    
     expect(pool.query).toHaveBeenCalledWith(
       'INSERT INTO classes (id, name, description, attributes) VALUES (?, ?, ?, ?)',
       [mockClass.id, mockClass.name, mockClass.description, JSON.stringify(mockClass.attributes)]
     );
+
     expect(classInstance).toEqual(mockClass);
+  });
+
+  test('should not create a class if name already exists', async () => {
+    const mockClass = { id: '1', name: 'Wizard', description: 'A powerful wizard', attributes: {} };
+
+    
+    pool.query.mockResolvedValueOnce([[{ id: '1' }]]); 
+
+    
+    await expect(ClassService.createClass(mockClass)).rejects.toThrow(
+      `Class with name '${mockClass.name}' already exists`
+    );
+
+    
+    expect(pool.query).toHaveBeenCalledWith(
+      'SELECT id FROM classes WHERE name = ?',
+      [mockClass.name]
+    );
+    expect(pool.query).not.toHaveBeenCalledWith(
+      'INSERT INTO classes (id, name, description, attributes) VALUES (?, ?, ?, ?)',
+      expect.anything()
+    );
   });
 
   test('should return all classes', async () => {
