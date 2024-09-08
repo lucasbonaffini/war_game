@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1725763807994" clover="3.2.0">
-  <project timestamp="1725763807994" name="All files">
-    <metrics statements="936" coveredstatements="773" conditionals="232" coveredconditionals="167" methods="125" coveredmethods="114" elements="1293" coveredelements="1054" complexity="0" loc="936" ncloc="936" packages="3" files="24" classes="24"/>
+<coverage generated="1725766681241" clover="3.2.0">
+  <project timestamp="1725766681242" name="All files">
+    <metrics statements="939" coveredstatements="775" conditionals="234" coveredconditionals="168" methods="125" coveredmethods="114" elements="1298" coveredelements="1057" complexity="0" loc="939" ncloc="939" packages="3" files="24" classes="24"/>
     <package name="models">
       <metrics statements="61" coveredstatements="41" conditionals="36" coveredconditionals="3" methods="9" coveredmethods="4"/>
       <file name="Character.js" path="/Users/lucasbonaffini/Dev/war_game/src/models/Character.js">
@@ -433,7 +433,7 @@
       </file>
     </package>
     <package name="services">
-      <metrics statements="560" coveredstatements="464" conditionals="150" coveredconditionals="118" methods="70" coveredmethods="64"/>
+      <metrics statements="563" coveredstatements="466" conditionals="152" coveredconditionals="119" methods="70" coveredmethods="64"/>
       <file name="CharacterService.js" path="/Users/lucasbonaffini/Dev/war_game/src/services/CharacterService.js">
         <metrics statements="184" coveredstatements="172" conditionals="56" coveredconditionals="45" methods="20" coveredmethods="20"/>
         <line num="1" count="4" type="stmt"/>
@@ -622,46 +622,49 @@
         <line num="458" count="4" type="stmt"/>
       </file>
       <file name="ClassService.js" path="/Users/lucasbonaffini/Dev/war_game/src/services/ClassService.js">
-        <metrics statements="39" coveredstatements="29" conditionals="10" coveredconditionals="8" methods="6" coveredmethods="6"/>
+        <metrics statements="42" coveredstatements="31" conditionals="12" coveredconditionals="9" methods="6" coveredmethods="6"/>
         <line num="1" count="6" type="stmt"/>
         <line num="2" count="6" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
         <line num="8" count="1" type="stmt"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="20" count="2" type="stmt"/>
-        <line num="21" count="2" type="stmt"/>
-        <line num="25" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="32" count="0" type="stmt"/>
-        <line num="37" count="2" type="stmt"/>
-        <line num="38" count="2" type="stmt"/>
-        <line num="39" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="40" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <line num="10" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="32" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="44" count="2" type="stmt"/>
+        <line num="45" count="2" type="stmt"/>
+        <line num="46" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="47" count="1" type="stmt"/>
         <line num="48" count="1" type="stmt"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
-        <line num="56" count="2" type="stmt"/>
-        <line num="57" count="2" type="stmt"/>
-        <line num="58" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="59" count="1" type="stmt"/>
-        <line num="60" count="1" type="stmt"/>
-        <line num="62" count="1" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="65" count="0" type="stmt"/>
-        <line num="70" count="2" type="stmt"/>
-        <line num="71" count="2" type="stmt"/>
-        <line num="72" count="2" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="65" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="77" count="2" type="stmt"/>
         <line num="78" count="2" type="stmt"/>
-        <line num="80" count="0" type="stmt"/>
-        <line num="81" count="0" type="stmt"/>
-        <line num="86" count="6" type="stmt"/>
+        <line num="79" count="2" type="stmt"/>
+        <line num="85" count="2" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="93" count="6" type="stmt"/>
       </file>
       <file name="GearService.js" path="/Users/lucasbonaffini/Dev/war_game/src/services/GearService.js">
         <metrics statements="40" coveredstatements="30" conditionals="6" coveredconditionals="6" methods="6" coveredmethods="6"/>

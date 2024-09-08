@@ -4,6 +4,13 @@ const pool = require('../config/db.js');
 class ClassService {
     static async createClass({ name, description, attributes }) {
         try {
+
+            const [existingClass] = await pool.query('SELECT id FROM classes WHERE name = ?', [name])   
+
+            if (existingClass.length > 0) {
+                throw new Error(`Class with name '${name}' already exists`);
+            }
+
             const newClass = new Class(undefined, name, description, attributes);
             await pool.query(
                 'INSERT INTO classes (id, name, description, attributes) VALUES (?, ?, ?, ?)',
